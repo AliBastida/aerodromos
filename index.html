@@ -43,7 +43,7 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Juego de Aeródromos – 200 preguntas</h1>
+      <h1 id="title">Juego de Aeródromos – 200 preguntas</h1>
       <span class="pill">Basado en tu temario (Tema 1 – Aeródromos)</span>
     </header>
 
@@ -60,18 +60,14 @@
           </label>
         </div>
         <div class="status">
-          <span>Pregunta: <strong id="qIndex">–</strong>/200</span>
+          <span>Pregunta: <strong id="qIndex">–</strong>/<strong id="qTotal">–</strong></span>
           <span>Aciertos seguidos: <strong id="streak">0</strong></span>
         </div>
       </div>
       <div class="grid">
         <div class="q">
           <h2 id="question">Pulsa <em>Empezar</em> para comenzar.</h2>
-          <div class="opts">
-            <div class="opt"><div class="tag">A</div><button id="optA" disabled>—</button></div>
-            <div class="opt"><div class="tag">B</div><button id="optB" disabled>—</button></div>
-            <div class="opt"><div class="tag">C</div><button id="optC" disabled>—</button></div>
-          </div>
+          <div class="opts" id="opts"></div>
           <p class="footer small muted">Sugerencia: usa <span class="kbd">R</span> para Reiniciar.</p>
         </div>
       </div>
@@ -259,10 +255,10 @@
       {"id":152,"q":"Letreros de señalización vertical (colores):","a":"Fondo negro/naranja/amarillo según tipo, con leyendas normalizadas (genérico del temario)","b":"Siempre fondo rojo","c":"Siempre fondo verde","correct":0},
       {"id":153,"q":"Señal de punto de espera de pista incluye…","a":"Patrón específico de líneas antes de la RWY","b":"X blancas grandes","c":"Flechas hacia umbral","correct":0},
       {"id":154,"q":"Señal de punto de espera intermedio se ubica…","a":"En intersecciones internas para control de rodaje","b":"En RESA","c":"En CWY","correct":0},
-      {"id":155,"q":"Señal de TWY cerrada:","a":"Marcaje claro de cierre","b":"Señal blanca de pista cerrada","c":"Luces de borde amarillas","correct":0},
-      
-      {"id":157,"q":"Señal de punto de verificación VOR:","a":; facilita chequear el equipo VOR en tierra","b":"Apartado 8.6; para PAPI","c":"Apartado 3.7; configuración","correct":0},
-
+      {"id":155,"q":"Señal de TWY cerrada:","a":"Marcaje claro de cierre según 7.2.5","b":"Señal blanca de pista cerrada","c":"Luces de borde amarillas","correct":0},
+      {"id":156,"q":"Señal de plataforma de viraje en pista pertenece a…","a":"Apartado 7.2.6 del temario","b":"Apartado 7.1.1","c":"Apartado 8.5.1","correct":0},
+      {"id":157,"q":"Señal de punto de verificación VOR:","a":"Apartado 7.2.7; facilita chequear el equipo VOR en tierra","b":"Apartado 8.6; para PAPI","c":"Apartado 3.7; configuración","correct":0},
+      {"id":158,"q":"Señalización de puesto de estacionamiento está en…","a":"Apartado 7.3","b":"Apartado 8.4","c":"Apartado 5.2","correct":0},
       {"id":159,"q":"Denominación de puestos de estacionamiento:","a":"Sistema alfanumérico coherente con la plataforma","b":"Designadores magnéticos","c":"Colores RGB","correct":0},
       {"id":160,"q":"Entrada/salida del stand puede requerir…","a":"Guiado por personal (marshalling) si no hay sistemas automáticos","b":"RETIL","c":"Stop bars en el stand","correct":0},
       {"id":161,"q":"Además de señalización, la inspección en plataforma revisa…","a":"Iluminación, FOD, legibilidad de marcas y estado de pavimento","b":"Plan de slots","c":"Precios de combustible","correct":0},
@@ -275,16 +271,16 @@
       {"id":167,"q":"Luces de zona de toma de contacto:","a":"Refuerzan percepción de la zona de aterrizaje en RWY de precisión","b":"Se ponen en todas las RWY","c":"Sustituyen marcas","correct":0},
       {"id":168,"q":"Luces de borde de pista:","a":"Delimitan los bordes de pista","b":"Guían en calles de rodaje","c":"Solo en plataformas","correct":0},
       {"id":169,"q":"Luces de zona de parada:","a":"Asociadas a SWY donde exista","b":"Asociadas a CWY","c":"Sustituyen stop bars","correct":0},
-      {"id":170,"q":"Luces de borde de TWY:","a":"Azules","b":"Verdes","c":"Blancas","correct":0},
-      {"id":171,"q":"Luces de eje de TWY:","a":"Verdes","b":"Azules","c":"Ámbar","correct":0},
-      {"id":172,"q":"RETIL se refiere a…","a":"Luces indicadoras de calle de salida rápida","b":"Luces de entrada a pista","c":"Luces PAPI","correct":0},
-      {"id":173,"q":"Stop bars se usan para…","a":"Detener aeronaves antes de pista cuando encendidas","b":"Marcar eje de pista","c":"Iluminar stands","correct":0},
-      {"id":174,"q":"Runway Guard Lights…","a":"Alertan de la proximidad de pista en puntos de cruce","b":"Iluminan RESA","c":"Son parte del ALS","correct":0},
+      {"id":170,"q":"Luces de borde de TWY (8.3.1):","a":"Azules","b":"Verdes","c":"Blancas","correct":0},
+      {"id":171,"q":"Luces de eje de TWY (8.3.2):","a":"Verdes","b":"Azules","c":"Ámbar","correct":0},
+      {"id":172,"q":"RETIL (8.3.3) se refiere a…","a":"Luces indicadoras de calle de salida rápida","b":"Luces de entrada a pista","c":"Luces PAPI","correct":0},
+      {"id":173,"q":"Stop bars (8.3.4) se usan para…","a":"Detener aeronaves antes de pista cuando encendidas","b":"Marcar eje de pista","c":"Iluminar stands","correct":0},
+      {"id":174,"q":"Runway Guard Lights (8.3.5)…","a":"Alertan de la proximidad de pista en puntos de cruce","b":"Iluminan RESA","c":"Son parte del ALS","correct":0},
 
-      {"id":175,"q":"Luces de entrada a pista sirven para…","a":"Transición visual desde aproximación al umbral","b":"Guiar sobre plataforma","c":"Iluminar RESA","correct":0},
-      {"id":176,"q":"Sistema sencillo de iluminación de aproximación:","a":"Configuración básica para pistas sin precisión","b":"Exclusivo CAT III","c":"Solo para pistas visuales diurnas","correct":0},
-      {"id":177,"q":"ALS para aproximaciones de precisión CAT I:","a":"Sistema específico más extenso que el sencillo","b":"Idéntico al de CAT II/III","c":"No incluye luces centrales","correct":0},
-      {"id":178,"q":"ALS para CAT II/IIIse caracteriza por…","a":"Mayor extensión y complejidad que CAT I","b":"Menor longitud que el sencillo","c":"Uso exclusivo de luces azules","correct":0},
+      {"id":175,"q":"Luces de entrada a pista (8.5.1) sirven para…","a":"Transición visual desde aproximación al umbral","b":"Guiar sobre plataforma","c":"Iluminar RESA","correct":0},
+      {"id":176,"q":"Sistema sencillo de iluminación de aproximación (8.5.2):","a":"Configuración básica para pistas sin precisión","b":"Exclusivo CAT III","c":"Solo para pistas visuales diurnas","correct":0},
+      {"id":177,"q":"ALS para aproximaciones de precisión CAT I (8.5.3):","a":"Sistema específico más extenso que el sencillo","b":"Idéntico al de CAT II/III","c":"No incluye luces centrales","correct":0},
+      {"id":178,"q":"ALS para CAT II/III (8.5.4) se caracteriza por…","a":"Mayor extensión y complejidad que CAT I","b":"Menor longitud que el sencillo","c":"Uso exclusivo de luces azules","correct":0},
       {"id":179,"q":"La finalidad de los ALS es…","a":"Proporcionar referencias visuales para la fase final de aproximación","b":"Medir PCN","c":"Sustituir PAPI","correct":0},
       {"id":180,"q":"‘Luces de entrada a pista’ forman parte de…","a":"Iluminación de aproximación (8.5)","b":"Iluminación de plataforma","c":"Señalización horizontal","correct":0},
 
@@ -312,16 +308,472 @@
       {"id":200,"q":"Para cumplir 33/33/33 en 200 ítems, la distribución exacta más cercana es…","a":"67 respuestas A, 67 B, 66 C","b":"66 A, 66 B, 66 C y 2 anuladas","c":"70 A, 65 B, 65 C","correct":0}
     ];
 
+    // ===== Additional questions (imported from user plain text) =====
+    const additionalQuestions = [
+  {
+    "q": "¿Qué es un aeródromo?",
+    "a": "Un área definida de tierra o agua destinada a la llegada y salida de aeronaves",
+    "b": "Un edificio para el embarque y desembarque de pasajeros",
+    "c": "Una pista de aterrizaje para helicópteros",
+    "d": "Un hangar para el mantenimiento de aviones",
+    "correct": 0,
+    "id": 201
+  },
+  {
+    "q": "¿Cuál es la principal diferencia entre un aeródromo y un aeropuerto?",
+    "a": "El tamaño de la pista",
+    "b": "El tipo de aeronaves que pueden aterrizar",
+    "c": "La presencia de instalaciones y servicios para el transporte aéreo comercial",
+    "d": "La ubicación geográfica",
+    "correct": 2,
+    "id": 202
+  },
+  {
+    "q": "¿Qué significa la sigla ARP?",
+    "a": "Área de Rodaje Principal",
+    "b": "Autorización de Ruta Prioritaria",
+    "c": "Aeropuerto Regional Primario",
+    "d": "Punto de Referencia de Aeródromo",
+    "correct": 3,
+    "id": 203
+  },
+  {
+    "q": "¿Cuál es la función principal de una calle de rodaje?",
+    "a": "Proporcionar un área para el despegue de aeronaves",
+    "b": "Enlazar diferentes partes del aeródromo",
+    "c": "Servir como zona de estacionamiento de aeronaves",
+    "d": "Facilitar el embarque de pasajeros",
+    "correct": 1,
+    "id": 204
+  },
+  {
+    "q": "¿Qué color tienen las señales de eje de pista?",
+    "a": "Amarillo",
+    "b": "Rojo",
+    "c": "Blanco",
+    "d": "Negro",
+    "correct": 2,
+    "id": 205
+  },
+  {
+    "q": "¿Qué indica la señal de umbral de pista?",
+    "a": "El final de la pista",
+    "b": "El punto medio de la pista",
+    "c": "Donde comienza la pista disponible para el aterrizaje",
+    "d": "La zona de parada",
+    "correct": 2,
+    "id": 206
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las luces PAPI?",
+    "a": "Iluminar la pista durante la noche",
+    "b": "Indicar la pendiente de aproximación correcta",
+    "c": "Marcar el eje de la pista",
+    "d": "Señalar la dirección del viento",
+    "correct": 1,
+    "id": 207
+  },
+  {
+    "q": "¿Qué color tienen las luces de borde de calle de rodaje?",
+    "a": "Rojo",
+    "b": "Verde",
+    "c": "Blanco",
+    "d": "Azul",
+    "correct": 3,
+    "id": 208
+  },
+  {
+    "q": "¿Qué es una plataforma en un aeródromo?",
+    "a": "Una zona elevada para observación",
+    "b": "Un área para el estacionamiento de aeronaves",
+    "c": "Una estructura para el control del tráfico aéreo",
+    "d": "Una superficie para el despegue de helicópteros",
+    "correct": 1,
+    "id": 209
+  },
+  {
+    "q": "¿Qué significa la sigla RESA?",
+    "a": "Radar de Emergencia para Seguridad Aérea",
+    "b": "Área de Seguridad de Extremo de Pista",
+    "c": "Ruta de Escape en Situaciones Anormales",
+    "d": "Reserva Especial de Servicios Aeroportuarios",
+    "correct": 1,
+    "id": 210
+  },
+  {
+    "q": "¿Cuál es la función principal del servicio de dirección de plataforma (SDP)?",
+    "a": "Controlar el tráfico en el espacio aéreo",
+    "b": "Dirigir el movimiento de aeronaves y vehículos en la plataforma",
+    "c": "Gestionar el embarque de pasajeros",
+    "d": "Coordinar los servicios de mantenimiento de aeronaves",
+    "correct": 1,
+    "id": 211
+  },
+  {
+    "q": "¿Qué es un METAR?",
+    "a": "Un informe de predicción meteorológica",
+    "b": "Un informe de observación meteorológica actual",
+    "c": "Un plan de vuelo",
+    "d": "Un sistema de navegación aérea",
+    "correct": 1,
+    "id": 212
+  },
+  {
+    "q": "¿Cuál es el objetivo principal del servicio de salvamento y extinción de incendios en un aeropuerto?",
+    "a": "Proteger las instalaciones del aeropuerto",
+    "b": "Salvar vidas en caso de accidentes o incidentes",
+    "c": "Realizar inspecciones de seguridad",
+    "d": "Controlar el acceso a áreas restringidas",
+    "correct": 1,
+    "id": 213
+  },
+  {
+    "q": "¿Qué significa la sigla SEI en el contexto aeroportuario?",
+    "a": "Sistema de Emergencia Integrado",
+    "b": "Servicio de Escala Internacional",
+    "c": "Salvamento y Extinción de Incendios",
+    "d": "Seguridad en Espacios Interiores",
+    "correct": 2,
+    "id": 214
+  },
+  {
+    "q": "¿Qué es el handling en un aeropuerto?",
+    "a": "El manejo de equipajes",
+    "b": "El conjunto de servicios de asistencia en tierra a aeronaves y pasajeros",
+    "c": "El control de tráfico aéreo",
+    "d": "La gestión de tiendas y restaurantes",
+    "correct": 1,
+    "id": 215
+  },
+  {
+    "q": "¿Qué es una barra de parada en un aeródromo?",
+    "a": "Una barrera física para detener aeronaves",
+    "b": "Una señal luminosa en la calle de rodaje",
+    "c": "Un dispositivo para medir la velocidad del viento",
+    "d": "Una herramienta para el mantenimiento de la pista",
+    "correct": 1,
+    "id": 216
+  },
+  {
+    "q": "¿Qué color tienen las luces de eje de pista?",
+    "a": "Rojo",
+    "b": "Verde",
+    "c": "Blanco",
+    "d": "Amarillo",
+    "correct": 2,
+    "id": 217
+  },
+  {
+    "q": "¿Cuál es la función principal de un faro de aeródromo?",
+    "a": "Guiar a las aeronaves durante el aterrizaje",
+    "b": "Identificar la ubicación del aeródromo desde el aire",
+    "c": "Iluminar la plataforma",
+    "d": "Medir la visibilidad",
+    "correct": 1,
+    "id": 218
+  },
+  {
+    "q": "¿Qué es un umbral desplazado?",
+    "a": "Un umbral que se ha movido desde el extremo físico de la pista",
+    "b": "Un umbral con iluminación especial",
+    "c": "Un umbral utilizado solo para despegues",
+    "d": "Un umbral con una pendiente pronunciada",
+    "correct": 0,
+    "id": 219
+  },
+  {
+    "q": "¿Qué significa la sigla TWY en un aeródromo?",
+    "a": "Terminal Way",
+    "b": "Taxiway (Calle de rodaje)",
+    "c": "Towing Way",
+    "d": "Take-off Way",
+    "correct": 1,
+    "id": 220
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las señales de punto de espera de la pista?",
+    "a": "Indicar dónde deben detenerse las aeronaves antes de entrar en la pista",
+    "b": "Marcar la zona de toma de contacto",
+    "c": "Señalar la dirección del viento",
+    "d": "Indicar la elevación del aeródromo",
+    "correct": 0,
+    "id": 221
+  },
+  {
+    "q": "¿Qué color tienen las señales de calle de rodaje?",
+    "a": "Blanco",
+    "b": "Rojo",
+    "c": "Amarillo",
+    "d": "Verde",
+    "correct": 2,
+    "id": 222
+  },
+  {
+    "q": "¿Qué es una zona de parada (stopway)?",
+    "a": "Un área para el estacionamiento de aeronaves",
+    "b": "Una zona después de la pista para detener aeronaves en caso de despegue abortado",
+    "c": "Un área de espera antes del despegue",
+    "d": "Una zona para la carga y descarga de mercancías",
+    "correct": 1,
+    "id": 223
+  },
+  {
+    "q": "¿Qué significa la sigla TODA?",
+    "a": "Take-Off Distance Available (Distancia de despegue disponible)",
+    "b": "Total Operations Daily Average",
+    "c": "Taxiway Operational Departure Area",
+    "d": "Terminal Operations and Departure Assistance",
+    "correct": 0,
+    "id": 224
+  },
+  {
+    "q": "¿Cuál es la función principal de las luces de identificación de umbral de pista?",
+    "a": "Indicar el centro de la pista",
+    "b": "Marcar el final de la pista",
+    "c": "Hacer más visible el umbral de la pista",
+    "d": "Señalar la zona de toma de contacto",
+    "correct": 2,
+    "id": 225
+  },
+  {
+    "q": "¿Qué es un puesto de estacionamiento aislado?",
+    "a": "Un área para aeronaves con problemas mecánicos",
+    "b": "Una zona para el repostaje de combustible",
+    "c": "Un lugar designado para aeronaves bajo amenaza de interferencia ilícita",
+    "d": "Un área de estacionamiento para aeronaves privadas",
+    "correct": 2,
+    "id": 226
+  },
+  {
+    "q": "¿Qué indica la señal de punto de visada en una pista?",
+    "a": "El punto donde debe aterrizar la aeronave",
+    "b": "La distancia restante de pista",
+    "c": "La dirección del viento",
+    "d": "La elevación del aeródromo",
+    "correct": 0,
+    "id": 227
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las luces de borde de pista?",
+    "a": "Indicar la dirección del viento",
+    "b": "Delimitar los bordes laterales de la pista",
+    "c": "Marcar el eje de la pista",
+    "d": "Señalar obstáculos cercanos",
+    "correct": 1,
+    "id": 228
+  },
+  {
+    "q": "¿Qué es una calle de salida rápida?",
+    "a": "Una calle de rodaje diseñada para evacuaciones de emergencia",
+    "b": "Una calle que permite a las aeronaves abandonar la pista a mayor velocidad",
+    "c": "Una vía de acceso rápido para vehículos de emergencia",
+    "d": "Una calle exclusiva para aeronaves de alta velocidad",
+    "correct": 1,
+    "id": 229
+  },
+  {
+    "q": "¿Qué significa la sigla LDA en el contexto de distancias declaradas?",
+    "a": "Longitud de Despegue Autorizada",
+    "b": "Límite de Distancia Aérea",
+    "c": "Landing Distance Available (Distancia de aterrizaje disponible)",
+    "d": "Longitud de Desaceleración Asignada",
+    "correct": 2,
+    "id": 230
+  },
+  {
+    "q": "¿Cuál es la función principal de las luces de zona de toma de contacto?",
+    "a": "Indicar la dirección del viento",
+    "b": "Iluminar la zona donde las aeronaves deben hacer el primer contacto al aterrizar",
+    "c": "Marcar el final de la pista",
+    "d": "Señalar la ubicación de las calles de salida",
+    "correct": 1,
+    "id": 231
+  },
+  {
+    "q": "¿Qué es un apartadero de espera?",
+    "a": "Una zona para el estacionamiento prolongado de aeronaves",
+    "b": "Un área donde las aeronaves pueden esperar sin obstaculizar el tráfico",
+    "c": "Una plataforma para el mantenimiento de aeronaves",
+    "d": "Un lugar designado para pasajeros en espera",
+    "correct": 1,
+    "id": 232
+  },
+  {
+    "q": "¿Qué color tienen las luces de extremo de pista?",
+    "a": "Verde",
+    "b": "Blanco",
+    "c": "Amarillo",
+    "d": "Rojo",
+    "correct": 3,
+    "id": 233
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las luces de protección de pista?",
+    "a": "Iluminar obstáculos cercanos a la pista",
+    "b": "Advertir que se está a punto de entrar en una pista activa",
+    "c": "Indicar la dirección del viento",
+    "d": "Señalar la zona de toma de contacto",
+    "correct": 1,
+    "id": 234
+  },
+  {
+    "q": "¿Qué es una plataforma de viraje en la pista?",
+    "a": "Un área para el giro de 180° de aeronaves en la pista",
+    "b": "Una plataforma elevada para observación",
+    "c": "Una zona para el estacionamiento temporal de aeronaves",
+    "d": "Un área para la carga y descarga de mercancías",
+    "correct": 0,
+    "id": 235
+  },
+  {
+    "q": "¿Qué significa la sigla ASDA?",
+    "a": "Área de Seguridad de Despegue y Aterrizaje",
+    "b": "Accelerate-Stop Distance Available (Distancia de aceleración-parada disponible)",
+    "c": "Asistencia de Servicios Durante Aproximación",
+    "d": "Autorización de Salida Después de Aterrizaje",
+    "correct": 1,
+    "id": 236
+  },
+  {
+    "q": "¿Cuál es la función principal del servicio meteorológico en un aeropuerto?",
+    "a": "Controlar el tráfico aéreo",
+    "b": "Proporcionar información meteorológica actualizada",
+    "c": "Gestionar el embarque de pasajeros",
+    "d": "Coordinar los servicios de handling",
+    "correct": 1,
+    "id": 237
+  },
+  {
+    "q": "¿Qué es un TAF en meteorología aeronáutica?",
+    "a": "Terminal Area Forecast (Pronóstico de área terminal)",
+    "b": "Tactical Air Force",
+    "c": "Total Airport Facilities",
+    "d": "Temporary Airfield Frequency",
+    "correct": 0,
+    "id": 238
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las señales de eje de calle de rodaje?",
+    "a": "Indicar la dirección del viento",
+    "b": "Guiar a las aeronaves durante el rodaje",
+    "c": "Marcar los límites de la plataforma",
+    "d": "Señalar la zona de parada",
+    "correct": 1,
+    "id": 239
+  },
+  {
+    "q": "¿Qué color tienen las luces de eje de calle de rodaje?",
+    "a": "Rojo",
+    "b": "Azul",
+    "c": "Verde",
+    "d": "Amarillo",
+    "correct": 2,
+    "id": 240
+  },
+  {
+    "q": "¿Qué es el PCN en relación con los pavimentos aeroportuarios?",
+    "a": "Pavement Classification Number (Número de clasificación de pavimentos)",
+    "b": "Primary Control Node",
+    "c": "Passenger Comfort Notification",
+    "d": "Pilot Communication Network",
+    "correct": 0,
+    "id": 241
+  },
+  {
+    "q": "¿Cuál es la función principal de la señal de punto de espera intermedio?",
+    "a": "Indicar el final de la pista",
+    "b": "Marcar el punto de espera en una intersección de calles de rodaje",
+    "c": "Señalar la zona de toma de contacto",
+    "d": "Indicar la dirección del viento",
+    "correct": 1,
+    "id": 242
+  },
+  {
+    "q": "¿Qué significa la sigla ATIS en el contexto aeroportuario?",
+    "a": "Airport Terminal Information Service",
+    "b": "Air Traffic Inspection System",
+    "c": "Automated Terminal Information Service",
+    "d": "Advanced Taxiway Illumination System",
+    "correct": 2,
+    "id": 243
+  },
+  {
+    "q": "¿Cuál es el propósito principal de un sistema de iluminación de aproximación?",
+    "a": "Iluminar la plataforma",
+    "b": "Guiar visualmente a las aeronaves durante la aproximación final",
+    "c": "Marcar obstáculos cercanos al aeropuerto",
+    "d": "Indicar la dirección del viento",
+    "correct": 1,
+    "id": 244
+  },
+  {
+    "q": "¿Qué es un puesto de estacionamiento en la plataforma?",
+    "a": "Un lugar designado para el estacionamiento de vehículos terrestres",
+    "b": "Un área específica para el estacionamiento de una aeronave",
+    "c": "Una zona de espera para pasajeros",
+    "d": "Un punto de control de seguridad",
+    "correct": 1,
+    "id": 245
+  },
+  {
+    "q": "¿Cuál es la función principal de las luces de borde de plataforma?",
+    "a": "Iluminar las zonas de trabajo en la plataforma",
+    "b": "Delimitar el perímetro de la plataforma",
+    "c": "Guiar a las aeronaves durante el rodaje",
+    "d": "Indicar la dirección del viento",
+    "correct": 1,
+    "id": 246
+  },
+  {
+    "q": "¿Qué es una zona libre de obstáculos (CWY) en un aeródromo?",
+    "a": "Un área sin edificios altos cerca del aeropuerto",
+    "b": "Una zona designada más allá del final de la pista para el ascenso inicial de las aeronaves",
+    "c": "Un espacio aéreo restringido sobre el aeropuerto",
+    "d": "Una zona de seguridad alrededor de la torre de control",
+    "correct": 1,
+    "id": 247
+  },
+  {
+    "q": "¿Cuál es el propósito principal de las señales de faja lateral de pista?",
+    "a": "Indicar la dirección del viento",
+    "b": "Marcar los bordes de la pista",
+    "c": "Señalar la zona de toma de contacto",
+    "d": "Guiar a las aeronaves durante el rodaje",
+    "correct": 1,
+    "id": 248
+  },
+  {
+    "q": "¿Qué es el servicio de dirección de plataforma?",
+    "a": "Un servicio que guía a los pasajeros en la terminal",
+    "b": "Un sistema de control de equipajes",
+    "c": "Un servicio que gestiona el movimiento de aeronaves y vehículos en la plataforma",
+    "d": "Un servicio de mantenimiento de la plataforma",
+    "correct": 2,
+    "id": 249
+  },
+  {
+    "q": "¿Cuál es la función principal de una franja de pista?",
+    "a": "Servir como área de estacionamiento de emergencia",
+    "b": "Proporcionar un área de seguridad alrededor de la pista",
+    "c": "Facilitar el drenaje de agua de la pista",
+    "d": "Permitir el acceso de vehículos de mantenimiento.",
+    "correct": 1,
+    "id": 250
+  }
+];
+questionBank.push(...additionalQuestions);
+
+
     // ===== Core state =====
     let order = []; // shuffled indices of questions
     let idx = 0;    // current index within order
     let streak = 0; // correct-in-a-row counter
 
     const qEl = document.getElementById('question');
-    const btnA = document.getElementById('optA');
-    const btnB = document.getElementById('optB');
-    const btnC = document.getElementById('optC');
+    const optsEl = document.getElementById("opts");
     const qIndexEl = document.getElementById('qIndex');
+    const qTotalEl = document.getElementById('qTotal');
+    const titleEl = document.getElementById('title');
     const streakEl = document.getElementById('streak');
     const overlay = document.getElementById('overlay');
     const ovTitle = document.getElementById('ovTitle');
@@ -339,8 +791,9 @@
     });
 
     function startGame(){
-      // Rebalance A/B/C correct letters to 67/67/66
-      rebalanceCorrectLetters();
+      // Rebalance only if all items have exactly 3 options
+      const anyHasFour = questionBank.some(q => (typeof q.d === 'string' && q.d) || (Array.isArray(q.opts) && q.opts.length===4));
+      if(!anyHasFour){ rebalanceCorrectLetters(); }
       order = Array.from({length: questionBank.length}, (_,i)=>i);
       shuffle(order);
       idx = 0; streak = 0; updateHUD();
@@ -353,6 +806,10 @@
       shuffle(order);
       idx = 0; streak = 0; updateHUD();
       renderCurrent();
+    }, (_,i)=>i);
+      shuffle(order);
+      idx = 0; streak = 0; updateHUD();
+      renderCurrent();
       if(showToast){
         // No-op
       }
@@ -361,16 +818,53 @@
     function updateHUD(){
       qIndexEl.textContent = idx>0 ? idx+1 : (order.length? 1: 0);
       streakEl.textContent = String(streak);
+      if(qTotalEl) qTotalEl.textContent = String(order.length || questionBank.length);
+      if(titleEl) titleEl.textContent = `Juego de Aeródromos – ${questionBank.length} preguntas`;
     }
 
-    function enableOpts(on){
-      [btnA,btnB,btnC].forEach(b=>b.disabled=!on);
-    }
+    function enableOpts(on){ optsEl.querySelectorAll("button").forEach(b=>b.disabled=!on); }
 
-    function renderCurrent(){
-      if(idx>=order.length){
-        qEl.innerHTML = `¡Victoria! Has acertado las 200 seguidas. Pulsa <strong>Reiniciar</strong> para volver a jugar.`;
-        [btnA,btnB,btnC].forEach(b=>{b.disabled=true; b.textContent='—';});
+    
+function getOptions(q){
+  // Build a normalized options array from legacy (a,b,c) or extended (a,b,c,d) structure
+  const arr = [];
+  if(typeof q.a === 'string') arr.push(q.a);
+  if(typeof q.b === 'string') arr.push(q.b);
+  if(typeof q.c === 'string') arr.push(q.c);
+  if(typeof q.d === 'string' && q.d) arr.push(q.d);
+  if(Array.isArray(q.opts)) return q.opts;
+  return arr;
+}
+
+function renderCurrent(){
+  if(idx>=order.length){
+    qEl.innerHTML = `¡Victoria! Has acertado las ${order.length} seguidas. Pulsa <strong>Reiniciar</strong> para volver a jugar.`;
+    enableOpts(false);
+    optsEl.innerHTML = '';
+    return;
+  }
+  const q = questionBank[order[idx]];
+  qEl.textContent = q.q;
+  const opts = getOptions(q);
+  const letters = ['A','B','C','D','E','F'];
+  optsEl.innerHTML = '';
+  opts.forEach((text, i) => {
+    const row = document.createElement('div');
+    row.className = 'opt';
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.textContent = letters[i];
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.disabled = false;
+    btn.onclick = () => answer(i, q);
+    row.appendChild(tag);
+    row.appendChild(btn);
+    optsEl.appendChild(row);
+  });
+  updateHUD();
+}
+);
         return;
       }
       const q = questionBank[order[idx]];
@@ -407,7 +901,37 @@
     }
 
     function rebalanceCorrectLetters(){
+      // If any question has 4 options, skip rebalancing (only intended for 3-option sets)
+      if(questionBank.some(q => (typeof q.d === 'string' && q.d))) return;
       const target = {A:67,B:67,C:66};
+      const counts = {A:0,B:0,C:0};
+
+      function moveCorrectTo(q, targetIdx){
+        if(q.correct === targetIdx) return;
+        const opts = [q.a,q.b,q.c];
+        const newOpts = [null,null,null];
+        newOpts[targetIdx] = opts[q.correct];
+        const otherSrc = [0,1,2].filter(i=>i!==q.correct);
+        const otherDst = [0,1,2].filter(i=>i!==targetIdx);
+        newOpts[otherDst[0]] = opts[otherSrc[0]];
+        newOpts[otherDst[1]] = opts[otherSrc[1]];
+        [q.a,q.b,q.c] = newOpts;
+        q.correct = targetIdx;
+      }
+
+      for(const q of questionBank){
+        if     (q.correct===0) counts.A++;
+        else if(q.correct===1) counts.B++;
+        else                   counts.C++;
+      }
+
+      for(const q of questionBank){
+        if(counts.A < target.A){ moveCorrectTo(q,0); counts.A++; continue; }
+        if(counts.B < target.B){ moveCorrectTo(q,1); counts.B++; continue; }
+        if(counts.C < target.C){ moveCorrectTo(q,2); counts.C++; continue; }
+        if(counts.A>=target.A && counts.B>=target.B && counts.C>=target.C) break;
+      }
+    };
       const counts = {A:0,B:0,C:0};
 
       function moveCorrectTo(q, targetIdx){
