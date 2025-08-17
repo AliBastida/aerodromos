@@ -751,6 +751,9 @@
     let idx = 0;
     let streak = 0;
 
+    // Permutation of option indices for the currently rendered question
+    let currentPerm = [];
+
     // ===== Elements =====
     const qEl = document.getElementById('question');
     const optsEl = document.getElementById('opts');
@@ -783,7 +786,7 @@
     }
 
     function renderCurrent(){
-      if(idx>=order.length){
+if(idx>=order.length){
         qEl.innerHTML = `¡Victoria! Has acertado las ${order.length} seguidas. Pulsa <strong>Reiniciar</strong> para jugar de nuevo.`;
         optsEl.innerHTML = '';
         return;
@@ -793,7 +796,12 @@
       const opts = getOptions(q);
       const letters = ['A','B','C','D'];
       optsEl.innerHTML = '';
-      opts.forEach((text, i) => {
+      // Build a permutation of available option indices and shuffle it
+      currentPerm = Array.from({length: opts.length}, (_, i) => i);
+      shuffle(currentPerm);
+      // Render according to the shuffled permutation, and pass the ORIGINAL index to the answer() handler
+      currentPerm.forEach((origIdx, i) => {
+        const text = opts[origIdx];
         const row = document.createElement('div');
         row.className = 'opt';
         const tag = document.createElement('div');
@@ -801,7 +809,8 @@
         tag.textContent = letters[i];
         const btn = document.createElement('button');
         btn.textContent = text;
-        btn.onclick = () => answer(i, q);
+        // Pass the original index (0=a,1=b,2=c,3=d) so comparison with q.correct remains valid
+        btn.onclick = () => answer(origIdx, q);
         row.appendChild(tag);
         row.appendChild(btn);
         optsEl.appendChild(row);
@@ -823,10 +832,11 @@
     }
 
     function answer(sel, q){
-      if(sel === q.correct){
+if(sel === q.correct){
         streak++; idx++;
         renderCurrent();
-      } else {
+      
+    } else {
         streak = 0;
         ovTitle.textContent = 'Respuesta correcta';
         const letters = ['A','B','C','D'];
