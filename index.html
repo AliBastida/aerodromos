@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Juego: Aeródromos – 200 preguntas</title>
+  <title>Quiz Aeródromos – 250 preguntas</title>
   <style>
-    :root{--bg:#0b1020;--card:#131a33;--muted:#8fa1ff;--ok:#00c853;--bad:#ff5252;--text:#e9edff;--warn:#ffb300}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0d1530); color:var(--text)}
-    .wrap{max-width:1000px;margin:0 auto;padding:24px}
-    header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    :root{--bg:#0b1020;--card:#131a33;--muted:#8fa1ff;--ok:#00c853;--bad:#ff5252;--text:#e9edff}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;background:linear-gradient(180deg,#0b1020,#0d1530);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
     h1{font-size:clamp(22px,2.6vw,30px);margin:0;font-weight:800;letter-spacing:.3px}
     .pill{border:1px solid #2b3566;background:#0f1533;padding:6px 10px;border-radius:999px;color:#cbd5ff;font-size:12px}
     .card{background:var(--card);border:1px solid #2a3566;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -20,7 +19,6 @@
     button.secondary{background:#12183b}
     .status{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px}
     .status span{font-variant-numeric:tabular-nums}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
     .q{padding:18px}
     .q h2{margin:0 0 10px;font-size:20px}
     .opts{display:grid;gap:10px}
@@ -37,39 +35,31 @@
     .overlay .box{background:#141b3a;border:1px solid #3a4799;border-radius:16px;padding:18px;max-width:640px}
     .overlay h3{margin:0 0 8px}
     .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0a0f28;border:1px solid #2a3566;padding:2px 6px;border-radius:6px;color:#cbd5ff}
-    .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1 id="title">Juego de Aeródromos – 200 preguntas</h1>
-      <span class="pill">Basado en tu temario (Tema 1 – Aeródromos)</span>
+      <h1 id="title">Quiz Aeródromos – 250 preguntas</h1>
+      <span class="pill">Banco combinado (200 + 50)</span>
     </header>
 
     <div class="card">
       <div class="q">
-        <p class="notice">Reglas: aciertas ⇒ pasas a la siguiente. Fallas ⇒ se muestra la correcta y <strong>se reinicia</strong> barajando todo. Ganas al encadenar las <strong>200 correctas</strong>. No se guarda progreso.</p>
+        <p class="notice">Reglas: aciertas ⇒ pasas a la siguiente. Fallas ⇒ muestro la correcta y <strong>reinicio</strong> barajando. Ganas al encadenar todas.</p>
         <div class="controls">
           <button id="startBtn">Empezar</button>
           <button id="restartBtn" class="secondary">Reiniciar</button>
-          <button id="validateBtn" class="secondary">Validar 33/33/33</button>
-          <button id="exportBtn" class="secondary">Exportar preguntas</button>
-          <label class="secondary" style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #3a4799;background:#12183b;cursor:pointer">
-            Importar JSON <input id="importInput" type="file" accept="application/json" class="sr-only" />
-          </label>
         </div>
         <div class="status">
           <span>Pregunta: <strong id="qIndex">–</strong>/<strong id="qTotal">–</strong></span>
           <span>Aciertos seguidos: <strong id="streak">0</strong></span>
         </div>
       </div>
-      <div class="grid">
-        <div class="q">
-          <h2 id="question">Pulsa <em>Empezar</em> para comenzar.</h2>
-          <div class="opts" id="opts"></div>
-          <p class="footer small muted">Sugerencia: usa <span class="kbd">R</span> para Reiniciar.</p>
-        </div>
+      <div class="q">
+        <h2 id="question">Pulsa <em>Empezar</em> para comenzar.</h2>
+        <div class="opts" id="opts"></div>
+        <p class="footer small muted">Sugerencia: usa <span class="kbd">R</span> para Reiniciar.</p>
       </div>
     </div>
 
@@ -83,12 +73,7 @@
   </div>
 
   <script>
-    // ===== Game data structure =====
-    /** Each question: { id:number, q:string, a:string, b:string, c:string, correct:0|1|2 } */
-
-    // NOTE: We will rebalance the correct letter positions at runtime to achieve ~33/33/33 over 200 (67/67/66).
-    // This keeps the content intact and just relocates where the correct choice sits among A/B/C.
-
+    // ===== Questions (50) =====
     const questionBank = [
       // (Same 200 questions as in the canvas; A is initially the correct option for most items)
       {"id":1,"q":"¿Cuál es la diferencia esencial entre aeródromo y aeropuerto?","a":"El aeropuerto es un aeródromo con instalaciones y servicios permanentes para transporte aéreo comercial","b":"El aeródromo tiene torre de control y el aeropuerto no","c":"El aeródromo siempre es de uso militar","correct":0},
@@ -307,9 +292,8 @@
       {"id":199,"q":"El balizamiento de aproximación más exigente se asocia a…","a":"Categorías II/III","b":"Pistas visuales","c":"RETIL","correct":0},
       {"id":200,"q":"Para cumplir 33/33/33 en 200 ítems, la distribución exacta más cercana es…","a":"67 respuestas A, 67 B, 66 C","b":"66 A, 66 B, 66 C y 2 anuladas","c":"70 A, 65 B, 65 C","correct":0}
     ];
-
-    // ===== Additional questions (imported from user plain text) =====
-    const additionalQuestions = [
+    // append 50 imported
+    questionBank.push(...[
   {
     "q": "¿Qué es un aeródromo?",
     "a": "Un área definida de tierra o agua destinada a la llegada y salida de aeronaves",
@@ -760,17 +744,16 @@
     "correct": 1,
     "id": 250
   }
-];
-questionBank.push(...additionalQuestions);
+]);
 
+    // ===== State =====
+    let order = [];
+    let idx = 0;
+    let streak = 0;
 
-    // ===== Core state =====
-    let order = []; // shuffled indices of questions
-    let idx = 0;    // current index within order
-    let streak = 0; // correct-in-a-row counter
-
+    // ===== Elements =====
     const qEl = document.getElementById('question');
-    const optsEl = document.getElementById("opts");
+    const optsEl = document.getElementById('opts');
     const qIndexEl = document.getElementById('qIndex');
     const qTotalEl = document.getElementById('qTotal');
     const titleEl = document.getElementById('title');
@@ -779,229 +762,140 @@ questionBank.push(...additionalQuestions);
     const ovTitle = document.getElementById('ovTitle');
     const ovBody = document.getElementById('ovBody');
 
-    document.getElementById('startBtn').addEventListener('click', startGame);
-    document.getElementById('restartBtn').addEventListener('click', () => restart(true));
-    document.getElementById('validateBtn').addEventListener('click', validateDistribution);
-    document.getElementById('exportBtn').addEventListener('click', exportQuestions);
-    document.getElementById('importInput').addEventListener('change', importQuestions);
-    document.getElementById('ovOk').addEventListener('click', () => { overlay.style.display='none'; });
+    // ===== Utils =====
+    function shuffle(a) { for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-    document.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='r') restart(true);
-    });
-
-    function startGame(){
-      // Rebalance only if all items have exactly 3 options
-      const anyHasFour = questionBank.some(q => (typeof q.d === 'string' && q.d) || (Array.isArray(q.opts) && q.opts.length===4));
-      if(!anyHasFour){ rebalanceCorrectLetters(); }
-      order = Array.from({length: questionBank.length}, (_,i)=>i);
-      shuffle(order);
-      idx = 0; streak = 0; updateHUD();
-      enableOpts(true);
-      renderCurrent();
-    }
-
-    function restart(showToast){
-      order = Array.from({length: questionBank.length}, (_,i)=>i);
-      shuffle(order);
-      idx = 0; streak = 0; updateHUD();
-      renderCurrent();
-    }, (_,i)=>i);
-      shuffle(order);
-      idx = 0; streak = 0; updateHUD();
-      renderCurrent();
-      if(showToast){
-        // No-op
-      }
-    }
-
+    // ===== Rendering =====
     function updateHUD(){
-      qIndexEl.textContent = idx>0 ? idx+1 : (order.length? 1: 0);
+      qIndexEl.textContent = (order.length && idx>=0 && idx<order.length) ? (idx+1) : '–';
       streakEl.textContent = String(streak);
-      if(qTotalEl) qTotalEl.textContent = String(order.length || questionBank.length);
-      if(titleEl) titleEl.textContent = `Juego de Aeródromos – ${questionBank.length} preguntas`;
+      qTotalEl.textContent = String(questionBank.length);
+      titleEl.textContent = `Quiz Aeródromos – ${questionBank.length} preguntas`;
     }
 
-    function enableOpts(on){ optsEl.querySelectorAll("button").forEach(b=>b.disabled=!on); }
+    function getOptions(q){
+      const arr = [];
+      if(typeof q.a==='string') arr.push(q.a);
+      if(typeof q.b==='string') arr.push(q.b);
+      if(typeof q.c==='string') arr.push(q.c);
+      if(typeof q.d==='string') arr.push(q.d);
+      return arr;
+    }
 
-    
-function getOptions(q){
-  // Build a normalized options array from legacy (a,b,c) or extended (a,b,c,d) structure
-  const arr = [];
-  if(typeof q.a === 'string') arr.push(q.a);
-  if(typeof q.b === 'string') arr.push(q.b);
-  if(typeof q.c === 'string') arr.push(q.c);
-  if(typeof q.d === 'string' && q.d) arr.push(q.d);
-  if(Array.isArray(q.opts)) return q.opts;
-  return arr;
-}
-
-function renderCurrent(){
-  if(idx>=order.length){
-    qEl.innerHTML = `¡Victoria! Has acertado las ${order.length} seguidas. Pulsa <strong>Reiniciar</strong> para volver a jugar.`;
-    enableOpts(false);
-    optsEl.innerHTML = '';
-    return;
-  }
-  const q = questionBank[order[idx]];
-  qEl.textContent = q.q;
-  const opts = getOptions(q);
-  const letters = ['A','B','C','D','E','F'];
-  optsEl.innerHTML = '';
-  opts.forEach((text, i) => {
-    const row = document.createElement('div');
-    row.className = 'opt';
-    const tag = document.createElement('div');
-    tag.className = 'tag';
-    tag.textContent = letters[i];
-    const btn = document.createElement('button');
-    btn.textContent = text;
-    btn.disabled = false;
-    btn.onclick = () => answer(i, q);
-    row.appendChild(tag);
-    row.appendChild(btn);
-    optsEl.appendChild(row);
-  });
-  updateHUD();
-}
-);
+    function renderCurrent(){
+      if(idx>=order.length){
+        qEl.innerHTML = `¡Victoria! Has acertado las ${order.length} seguidas. Pulsa <strong>Reiniciar</strong> para jugar de nuevo.`;
+        optsEl.innerHTML = '';
         return;
       }
       const q = questionBank[order[idx]];
       qEl.textContent = q.q;
-      btnA.textContent = q.a; btnB.textContent = q.b; btnC.textContent = q.c;
-      btnA.onclick = () => answer(0,q);
-      btnB.onclick = () => answer(1,q);
-      btnC.onclick = () => answer(2,q);
+      const opts = getOptions(q);
+      const letters = ['A','B','C','D'];
+      optsEl.innerHTML = '';
+      opts.forEach((text, i) => {
+        const row = document.createElement('div');
+        row.className = 'opt';
+        const tag = document.createElement('div');
+        tag.className = 'tag';
+        tag.textContent = letters[i];
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.onclick = () => answer(i, q);
+        row.appendChild(tag);
+        row.appendChild(btn);
+        optsEl.appendChild(row);
+      });
       updateHUD();
     }
 
-    function answer(sel,q){
+    // ===== Game Flow =====
+    function startGame(){
+      order = Array.from({length: questionBank.length}, (_,i)=>i);
+      shuffle(order);
+      idx = 0; streak = 0;
+      updateHUD();
+      renderCurrent();
+    }
+
+    function restart(){
+      startGame();
+    }
+
+    function answer(sel, q){
       if(sel === q.correct){
         streak++; idx++;
         renderCurrent();
       } else {
-        const letters = ['A','B','C'];
-        ovTitle.textContent = 'Respuesta incorrecta';
-        ovBody.innerHTML = `La opción correcta era <strong>${letters[q.correct]}</strong>: <em>${[q.a,q.b,q.c][q.correct]}</em>.<br>La partida se reinicia y se barajan las preguntas.`;
+        streak = 0;
+        ovTitle.textContent = 'Respuesta correcta';
+        const letters = ['A','B','C','D'];
+        const opts = getOptions(q);
+        ovBody.textContent = `${letters[q.correct]}) ${opts[q.correct]}`;
         overlay.style.display = 'flex';
-        setTimeout(()=>{ overlay.style.display='none'; restart(); }, 2200);
-      }
-      updateHUD();
-    }
-
-    // ===== Utilities =====
-    function shuffle(arr){
-      // Fisher–Yates
-      for(let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]]=[arr[j],arr[i]];
-      }
-      return arr;
-    }
-
-    function rebalanceCorrectLetters(){
-      // If any question has 4 options, skip rebalancing (only intended for 3-option sets)
-      if(questionBank.some(q => (typeof q.d === 'string' && q.d))) return;
-      const target = {A:67,B:67,C:66};
-      const counts = {A:0,B:0,C:0};
-
-      function moveCorrectTo(q, targetIdx){
-        if(q.correct === targetIdx) return;
-        const opts = [q.a,q.b,q.c];
-        const newOpts = [null,null,null];
-        newOpts[targetIdx] = opts[q.correct];
-        const otherSrc = [0,1,2].filter(i=>i!==q.correct);
-        const otherDst = [0,1,2].filter(i=>i!==targetIdx);
-        newOpts[otherDst[0]] = opts[otherSrc[0]];
-        newOpts[otherDst[1]] = opts[otherSrc[1]];
-        [q.a,q.b,q.c] = newOpts;
-        q.correct = targetIdx;
-      }
-
-      for(const q of questionBank){
-        if     (q.correct===0) counts.A++;
-        else if(q.correct===1) counts.B++;
-        else                   counts.C++;
-      }
-
-      for(const q of questionBank){
-        if(counts.A < target.A){ moveCorrectTo(q,0); counts.A++; continue; }
-        if(counts.B < target.B){ moveCorrectTo(q,1); counts.B++; continue; }
-        if(counts.C < target.C){ moveCorrectTo(q,2); counts.C++; continue; }
-        if(counts.A>=target.A && counts.B>=target.B && counts.C>=target.C) break;
-      }
-    };
-      const counts = {A:0,B:0,C:0};
-
-      function moveCorrectTo(q, targetIdx){
-        if(q.correct === targetIdx) return;
-        const opts = [q.a,q.b,q.c];
-        const newOpts = [null,null,null];
-        newOpts[targetIdx] = opts[q.correct];
-        const otherSrc = [0,1,2].filter(i=>i!==q.correct);
-        const otherDst = [0,1,2].filter(i=>i!==targetIdx);
-        newOpts[otherDst[0]] = opts[otherSrc[0]];
-        newOpts[otherDst[1]] = opts[otherSrc[1]];
-        [q.a,q.b,q.c] = newOpts;
-        q.correct = targetIdx;
-      }
-
-      for(const q of questionBank){
-        if     (q.correct===0) counts.A++;
-        else if(q.correct===1) counts.B++;
-        else                   counts.C++;
-      }
-
-      for(const q of questionBank){
-        if(counts.A < target.A){ moveCorrectTo(q,0); counts.A++; continue; }
-        if(counts.B < target.B){ moveCorrectTo(q,1); counts.B++; continue; }
-        if(counts.C < target.C){ moveCorrectTo(q,2); counts.C++; continue; }
-        if(counts.A>=target.A && counts.B>=target.B && counts.C>=target.C) break;
+        order = shuffle(order); idx = 0;
+        updateHUD();
       }
     }
 
-    function validateDistribution(){
-      const counts = {A:0,B:0,C:0};
-      for(const q of questionBank){
-        if(q.correct===0) counts.A++; else if(q.correct===1) counts.B++; else counts.C++;
-      }
-      alert(`Correctas por letra:\nA: ${counts.A}\nB: ${counts.B}\nC: ${counts.C}\n(Objetivo ≈ 67/67/66 para 200 preguntas)`);
-    }
+    // ===== Events =====
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('restartBtn').addEventListener('click', restart);
+    document.getElementById('ovOk').addEventListener('click', () => { overlay.style.display='none'; renderCurrent(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='r') restart(); });
 
-    function exportQuestions(){
-      const blob = new Blob([JSON.stringify(questionBank,null,2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'preguntas_aerodromos.json'; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importQuestions(e){
-      const file = e.target.files?.[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try{
-          const arr = JSON.parse(reader.result);
-          if(!Array.isArray(arr)) throw new Error('Formato inválido');
-          if(arr.some(x=>typeof x.q!== 'string' || typeof x.a!=='string' || typeof x.b!=='string' || typeof x.c!=='string' || typeof x.correct!=='number')){
-            throw new Error('Estructura inválida');
-          }
-          if(arr.some(x=>x.correct<0 || x.correct>2)) throw new Error('Índice de correcta fuera de rango');
-          if(arr.length!==200){
-            if(!confirm(`Se han cargado ${arr.length} preguntas (no son 200). ¿Usarlas igualmente?`)) return;
-          }
-          questionBank.length = 0; questionBank.push(...arr);
-          restart(true);
-          alert('Preguntas importadas y barajadas.');
-        }catch(err){
-          alert('Error al importar: '+err.message);
-        }
-      };
-      reader.readAsText(file);
-      e.target.value = '';
-    }
-  </script>
+    // Init HUD
+    updateHUD();
+  
+questionBank.push(...[
+  {"q": "Indicar cuál de las siguientes configuraciones de pistas de vuelo es incorrecta:", "a": "Pistas paralelas: sus prolongaciones de eje no se cortan.", "b": "Pistas casi paralelas: sus prolongaciones forman un ángulo ≤ 15°.", "c": "Pistas radiales: varias pistas cuyos ejes convergen en un punto común.", "correct": 2, "id": 251},
+  {"q": "En aquellos casos en que el umbral de pista se encuentre desplazado, ¿está permitido realizar despegues desde el inicio físico de la pista?", "a": "Sí, los despegues pueden iniciarse desde el inicio físico de la pista.", "b": "No, queda prohibido usar la parte anterior al umbral para cualquier maniobra.", "c": "Solo es posible para aeronaves basadas en el aeródromo.", "correct": 0, "id": 252},
+  {"q": "Se define como margen de pista a la banda de terreno que bordea un pavimento (pista), tratada de forma que sirva de transición entre ese pavimento y el terreno adyacente. ¿Cómo se extienden los márgenes de pista?", "a": "Simétricamente a ambos lados de la pista y al mismo nivel que ésta.", "b": "Solo por el lado izquierdo de la pista y 10 cm por debajo del nivel del pavimento.", "c": "De forma asimétrica para favorecer el drenaje transversal.", "correct": 0, "id": 253},
+  {"q": "La OACI recomienda una serie de valores para el ancho de las pistas de aterrizaje, en función del número y letra de clave asignado a cada pista. En el caso de las pistas de aproximación con número de clave 1 ó 2 ¿Qué anchura recomienda la OACI?", "a": "18 m (clave 1) y 23 m (clave 2).", "b": "23 m (clave 1) y 30 m (clave 2).", "c": "30 m (clave 1) y 45 m (clave 2).", "correct": 0, "id": 254},
+  {"q": "En las calles de rodaje la designación se hace con una o varias letras o con letras seguidas de un número. Sin embargo, determinadas letras no deberían utilizarse, ya que podrían confundirse con algunos números o con la señal de zona cerrada de aeródromo. ¿Cuáles son estas letras?", "a": "I, O y X.", "b": "A, E y F.", "c": "C, G y H.", "correct": 0, "id": 255},
+  {"q": "¿Cuál es la función de la señal de punto de visada en una pista de aterrizaje?", "a": "Proporcionar al piloto una referencia visual precisa para la visada/toma.", "b": "Indicar la zona de frenado máximo.", "c": "Señalar el inicio del tramo de luces de eje alternas.", "correct": 0, "id": 256},
+  {"q": "La señal de punto de visada proporciona información de la distancia respecto al umbral y consiste en:", "a": "Dos fajas rectangulares bien visibles, simétricas respecto al eje de pista.", "b": "Un círculo blanco centrado en el eje de pista.", "c": "Una “X” blanca situada 150 m después del umbral.", "correct": 0, "id": 257},
+  {"q": "¿De qué color son las señales de calles de rodaje y plataforma?", "a": "Amarillo.", "b": "Blanco.", "c": "Rojo.", "correct": 0, "id": 258},
+  {"q": "¿De qué color son las luces de la zona de parada?", "a": "Rojo (fijas, unidireccionales).", "b": "Verde (fijas, bidireccionales).", "c": "Blanco (intermitentes).", "correct": 0, "id": 259},
+  {"q": "Las señales de puesto de estacionamiento de aeronaves se deben proporcionar en las plataformas pavimentadas de los aeródromos. ¿Estas señales deben proporcionarse también en las instalaciones de deshielo o antihielo?", "a": "Sí, también en instalaciones de deshielo/antihielo.", "b": "No, únicamente en plataformas de pasajeros.", "c": "Solo cuando así lo requiera la torre de control.", "correct": 0, "id": 260},
+  {"q": "En los aeródromos, las pistas con umbral desplazado cuentan con luces de borde. En ese tramo entre el inicio de pista y el umbral desplazado, estas luces serán:", "a": "Rojas en la dirección de la aproximación.", "b": "Verdes en ambas direcciones.", "c": "Ámbar en el primer tercio y blancas en el resto.", "correct": 0, "id": 261},
+  {"q": "El área de rodaje de un aeródromo está compuesta por calles de rodaje y apartaderos de espera. ¿Cuál es su finalidad principal?", "a": "Unir la pista con las plataformas y facilitar la circulación segura en tierra.", "b": "Proporcionar una zona para abortar despegues.", "c": "Aumentar la distancia de aterrizaje disponible.", "correct": 0, "id": 262},
+  {"q": "Los apartaderos de espera, junto con las plataformas de viraje en pista, forman parte del área de rodaje de un aeródromo. En las segundas:", "a": "Se completa un viraje de 180° para alinearse con la pista.", "b": "Se estacionan aeronaves en espera prolongada.", "c": "Se realiza el chequeo de altímetro.", "correct": 0, "id": 263},
+  {"q": "En aeródromos en servicio nocturno, ¿qué requisito deben cumplir los indicadores de dirección del viento respecto a su visibilidad/iluminación?", "a": "Ser claramente visibles desde el área de movimiento y estar iluminados de noche.", "b": "Pintarse en blanco y negro y no requerir iluminación.", "c": "Ubicarse siempre en la azotea de la terminal sin iluminación.", "correct": 0, "id": 264},
+  {"q": "Las señales son ayudas visuales proporcionadas por medio de superficies pintadas sobre el pavimento de las pistas y calles de rodaje. Cada elemento de la pista tiene su propia señalización; en concreto, la señal de umbral, cuando se trata de un umbral desplazado temporalmente, además de las fajas longitudinales deberá añadir:", "a": "Una faja transversal, “V” invertidas y flechas antes de la faja.", "b": "Dos círculos concéntricos y flechas hacia el umbral.", "c": "Solo una “X” amarilla en el pavimento.", "correct": 0, "id": 265},
+  {"q": "La pista de vuelo es un área del aeródromo que concentra una gran cantidad de ayudas visuales. La señal de zona de toma de contacto, formada por pares de fajas simétricas respecto al eje de pista, indica la distancia respecto al umbral de pista, a intervalos de:", "a": "150 m.", "b": "100 m.", "c": "300 m.", "correct": 0, "id": 266},
+  {"q": "Las calles de rodaje concentran desplazamientos de aeronaves y vehículos. La señal de punto de espera de la pista, que marca dónde detenerse hasta autorización, se dispone en:", "a": "Las intersecciones de calles de rodaje con la pista (punto donde detenerse hasta autorización).", "b": "El punto medio de la pista para inspecciones.", "c": "Solo en plataformas de viraje.", "correct": 0, "id": 267},
+  {"q": "Con el fin de mantener seguridad, regularidad y eficiencia en las operaciones aeronáuticas, cada aeródromo debe declarar una serie de distancias. Una de ellas es la distancia de aceleración–parada disponible (ASDA) que se define como:", "a": "TORA + SWY (si existe).", "b": "LDA + RESA.", "c": "TODA – CWY.", "correct": 0, "id": 268},
+  {"q": "Los aeródromos que estén en servicio de noche cuentan con un faro de aeródromo o con un faro de identificación. En aeródromos terrestres, los destellos pueden ser:", "a": "Solo blancos o blancos alternados con verdes.", "b": "Solo verdes o verdes alternados con amarillos.", "c": "Blancos alternados con rojos.", "correct": 0, "id": 269},
+  {"q": "El principal elemento del área de aterrizaje es la pista, pero además de ésta, existe la zona de parada, formada por un área rectangular situada al final de la pista y preparada para que puedan pararse sobre ella las aeronaves, cuando:", "a": "Se interrumpe el despegue.", "b": "Se realiza un aterrizaje largo.", "c": "Se efectúa un backtrack.", "correct": 0, "id": 270},
+  {"q": "El eje de pista es la línea longitudinal que divide a ésta en dos partes simétricas. Sus luces varían de color con la distancia al extremo de pista. En el tramo desde el umbral hasta el punto situado a 900 m del extremo de pista, son de color:", "a": "Blanco (variable).", "b": "Rojo.", "c": "Alternado rojo/blanco.", "correct": 0, "id": 271},
+  {"q": "Las plataformas de viraje en pista cuentan con luces fijas, unidireccionales, de color verde y visibles:", "a": "En la dirección de rodaje para completar el viraje y alineación.", "b": "Solo lateralmente a 90°.", "c": "En ambas direcciones de forma bidireccional.", "correct": 0, "id": 272},
+  {"q": "¿Cómo se disponen las luces de punto de espera intermedio respecto al eje de la calle de rodaje?", "a": "Tres luces fijas amarillas a cada lado, en una línea perpendicular al eje.", "b": "Dos luces verdes paralelas al eje.", "c": "Un patrón alternado rojo/blanco sobre el eje.", "correct": 0, "id": 273},
+  {"q": "Con el fin de facilitar a las aeronaves una guía visual a lo largo de una trayectoria de aproximación determinada, en los aeródromos se instalan las luces de entrada a la pista, situadas delante del umbral y caracterizadas por ser:", "a": "Una fila de luces blancas que proporciona guía visual en la trayectoria de aproximación.", "b": "Una fila de luces verdes que marcan el eje de pista.", "c": "Luces rojas intermitentes dispuestas solo en el umbral.", "correct": 0, "id": 274},
+  {"q": "Los sistemas indicadores de pendiente de aproximación proporcionan información mediante un código de colores. Uno de estos sistemas es el PAPI, formado por:", "a": "Una barra (“ala”) con cuatro unidades luminosas.", "b": "Dos barras con cinco unidades por barra (20 en total).", "c": "Dos unidades luminosas separadas.", "correct": 0, "id": 275},
+  {"q": "En un sistema PAPI, observar dos luces blancas y dos rojas indica que el piloto está:", "a": "En la pendiente nominal de aproximación.", "b": "Por encima de la pendiente.", "c": "Por debajo de la pendiente.", "correct": 0, "id": 276},
+  {"q": "¿Qué distancia señalan los pares de fajas de la zona de toma de contacto a partir del umbral?", "a": "150 m.", "b": "100 m.", "c": "300 m.", "correct": 0, "id": 277},
+  {"q": "¿Qué subdivisiones componen el lado tierra de un aeropuerto?", "a": "Terminales de pasajeros y carga, accesos, aparcamientos y edificios asociados.", "b": "Pistas, calles de rodaje y plataforma.", "c": "Áreas de emergencia y RESA.", "correct": 0, "id": 278},
+  {"q": "Las ayudas visuales de los aeródromos incluyen señales que pueden sustituir o complementar letreros. Las señales de emplazamiento serán:", "a": "Fondo negro con inscripción amarilla.", "b": "Fondo amarillo con inscripción negra.", "c": "Fondo rojo con inscripción blanca.", "correct": 0, "id": 279},
+  {"q": "¿Qué es la clave de referencia de aeródromo?", "a": "Un método para relacionar características del aeródromo con las de las aeronaves previstas (número y letra).", "b": "El código OACI de cuatro letras del aeródromo.", "c": "La cota barométrica de referencia del aeródromo.", "correct": 0, "id": 280},
+  {"q": "¿Cuál es la finalidad principal de las balizas en un aeródromo en relación con la delimitación?", "a": "Indicar o trazar los límites del área de aterrizaje y de rodaje.", "b": "Señalar el eje de pista durante la aproximación.", "c": "Medir el alcance visual en pista (RVR).", "correct": 0, "id": 281},
+  {"q": "Los aeropuertos se definen como aeródromos dotados de instalaciones y servicios con carácter público, para asistir de modo regular al tráfico aéreo. Se dividen en dos zonas diferentes, el lado aire y el lado tierra. Este último está formado por:", "a": "Terminales de pasajeros y carga, accesos, aparcamientos y edificios asociados.", "b": "Pistas, calles de rodaje y plataforma.", "c": "Únicamente la zona pública de la terminal.", "correct": 0, "id": 282},
+  {"q": "¿Cómo se define la elevación del aeródromo?", "a": "Como la elevación del punto más alto del área de aterrizaje (pista).", "b": "Como la elevación media del umbral principal.", "c": "Como la elevación del ARP.", "correct": 0, "id": 283},
+  {"q": "Los aeródromos cuentan con unos mínimos de utilización. Uno de los parámetros utilizados para el cálculo de estos mínimos es el alcance visual en pista (RVR), que es la distancia horizontal hasta la cual:", "a": "El piloto puede ver las señales/luces de pista a lo largo del eje.", "b": "Se distingue la torre de control desde cabecera.", "c": "Se ve la manga de viento desde la aproximación.", "correct": 0, "id": 284},
+  {"q": "Los pavimentos deben poder soportar el tráfico de los aviones previstos. Según el método ACN–PCN, una aeronave puede operar en un pavimento siempre que:", "a": "ACN ≤ PCN.", "b": "ACN ≥ PCN.", "c": "ACN = PCN exactamente.", "correct": 0, "id": 285},
+  {"q": "El número de clasificación de pavimentos (PCN) indica la resistencia de un pavimento para utilizarlo sin restricciones y se compone de un número y un conjunto de letras que indican el tipo de pavimento, la resistencia del terreno de fundación, el método de evaluación y:", "a": "Categoría de presión máxima admisible de neumáticos.", "b": "Clase de aproximación de la pista.", "c": "Categoría del servicio de control.", "correct": 0, "id": 286},
+  {"q": "Las distancias declaradas: la distancia de despegue disponible (TODA) es:", "a": "TORA + CWY (si existe).", "b": "LDA – desplazamiento de umbral.", "c": "TORA – SWY.", "correct": 0, "id": 287},
+  {"q": "¿Qué es el lado tierra de un aeropuerto?", "a": "La zona donde se realiza la operación de pasajeros, equipajes y carga previa/posterior al vuelo.", "b": "La zona donde operan aeronaves (pistas y plataformas).", "c": "El área restringida de seguridad perimetral.", "correct": 0, "id": 288},
+  {"q": "La clave de referencia de aeródromo se compone de un número y una letra. ¿Con qué está relacionado el número de clave?", "a": "Con la longitud del campo de referencia del avión.", "b": "Con la envergadura máxima de la aeronave.", "c": "Con la masa máxima al despegue.", "correct": 0, "id": 289},
+  {"q": "¿Qué distancias declaradas debe facilitar un aeródromo para cada pista?", "a": "TORA, TODA, ASDA y LDA.", "b": "RESA, CWY y SWY.", "c": "RVR, DA/H y MDA/H.", "correct": 0, "id": 290},
+  {"q": "¿Qué significan las siglas ACN?", "a": "Aircraft Classification Number.", "b": "Aerodrome Control Number.", "c": "Approach Category Number.", "correct": 0, "id": 291},
+  {"q": "En el método ACN–PCN, ¿qué información expresan las letras del código PCN además del número?", "a": "Tipo de pavimento, resistencia del terreno de fundación, método de evaluación y categoría de presión de neumáticos.", "b": "Categoría I/II/III del ILS, RVR y altura de decisión.", "c": "Longitud de pista, anchura y RESA.", "correct": 0, "id": 292},
+  {"q": "Según el criterio de la masa del avión para determinar si una aeronave puede operar en un determinado pavimento, es necesario notificar dos parámetros de la aeronave. ¿Cuáles son estos parámetros?", "a": "Masa máxima permisible y presión máxima permisible de neumáticos.", "b": "Masa en vacío y masa de combustible.", "c": "Empuje máximo y número de ruedas.", "correct": 0, "id": 293},
+  {"q": "¿Qué es el área de movimiento de un aeródromo?", "a": "Parte del aeródromo para despegue, aterrizaje y rodaje (área de maniobras + plataformas).", "b": "Solo pistas y calles de rodaje.", "c": "Solo plataformas y hangares.", "correct": 0, "id": 294},
+  {"q": "El lado aire de un aeródromo es la zona del aeropuerto donde tiene lugar la operación de las aeronaves. En esta zona se encuentra la pista de vuelo, destinada al aterrizaje y despegue de las aeronaves. El lugar en el que comienza la parte de la pista utilizable para el aterrizaje se denomina:", "a": "Umbral.", "b": "Zona de parada.", "c": "Punto medio de pista.", "correct": 0, "id": 295},
+  {"q": "El área de aterrizaje de un aeropuerto incluye la pista y las zonas adyacentes. El punto de visada es la zona de la pista situada a continuación del umbral y destinada a:", "a": "Proporcionar al piloto una referencia visual para la visada en el aterrizaje.", "b": "Señalar la zona de frenado máximo.", "c": "Indicar la zona de backtrack.", "correct": 0, "id": 296},
+  {"q": "El método de la masa del avión para determinar la resistencia del pavimento se utilizará si la masa de los aviones para la que está previsto el pavimento es:", "a": "Inferior a 5 700 kg.", "b": "Superior a 5 700 kg.", "c": "Igual o superior a 27 000 kg.", "correct": 0, "id": 297}
+]);
+</script>
 </body>
 </html>
