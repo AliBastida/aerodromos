@@ -1,159 +1,483 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quiz Aeródromos — 200 preguntas</title>
-<style>
-  :root {
-    --bg: #0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb;
-    --accent:#22c55e; --danger:#ef4444; --primary:#38bdf8;
-  }
-  * { box-sizing: border-box; }
-  html, body { height:100%; margin:0; background: radial-gradient(1200px 800px at 70% -10%, #1f2937 0%, var(--bg) 60%); color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
-  .wrap { min-height:100%; display:grid; grid-template-rows:auto 1fr auto; }
-  header, footer { padding:16px; text-align:center; color:var(--muted); font-size:14px; }
-  header strong { color:var(--text); }
-  .container { display:grid; place-items:center; padding:24px; }
-  .card { width:min(900px,95vw); background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); border:1px solid rgba(148,163,184,.12); border-radius:16px; padding:28px; box-shadow:0 10px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06); backdrop-filter: blur(6px); }
-  .meta { display:flex; gap:10px; align-items:center; color:var(--muted); font-size:14px; margin-bottom:12px; flex-wrap:wrap; }
-  .badge { border:1px solid rgba(148,163,184,.3); padding:2px 8px; border-radius:999px; color:var(--muted); }
-  .question { font-size: clamp(18px, 2.1vw, 26px); line-height:1.35; margin:10px 0 18px; font-weight:600; }
-  .choices { display:grid; gap:12px; }
-  button.choice { width:100%; text-align:left; background:#0b1220; color:var(--text); border:1px solid rgba(148,163,184,.18); padding:14px 16px; border-radius:12px; cursor:pointer; font-size:16px; transition: transform .06s ease, border-color .15s ease, background .15s ease; }
-  button.choice:hover { transform: translateY(-1px); border-color: rgba(148,163,184,.34); }
-  button.choice.correct { border-color: rgba(34,197,94,.7); background: rgba(34,197,94,.08); }
-  button.choice.wrong { border-color: rgba(239,68,68,.8); background: rgba(239,68,68,.08); }
-  button.choice:disabled { opacity: .8; cursor: not-allowed; }
-  .status { margin-top:16px; color:var(--muted); font-size:14px; min-height:22px; }
-  .status .ok { color: var(--accent); font-weight:600; }
-  .status .fail { color: var(--danger); font-weight:600; }
-  .progress { height:8px; background: rgba(148,163,184,.2); border-radius:999px; overflow:hidden; margin-top:12px; }
-  .bar { height:100%; width:0%; background: linear-gradient(90deg, var(--primary), #60a5fa, #22c55e); transition: width .25s ease; }
-  .controls { margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
-  .btn { background: var(--primary); color:#03131f; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; transition: transform .06s ease, filter .15s ease; }
-  .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-  .tiny { font-size:12px; color:var(--muted); margin-top:8px; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juego: Aeródromos – 200 preguntas</title>
+  <style>
+    :root{--bg:#0b1020;--card:#131a33;--muted:#8fa1ff;--ok:#00c853;--bad:#ff5252;--text:#e9edff;--warn:#ffb300}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0d1530); color:var(--text)}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    h1{font-size:clamp(22px,2.6vw,30px);margin:0;font-weight:800;letter-spacing:.3px}
+    .pill{border:1px solid #2b3566;background:#0f1533;padding:6px 10px;border-radius:999px;color:#cbd5ff;font-size:12px}
+    .card{background:var(--card);border:1px solid #2a3566;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    button{appearance:none;border:1px solid #3a4799;background:#1a2352;color:#eef1ff;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
+    button:hover{filter:brightness(1.1)}
+    button.secondary{background:#12183b}
+    .status{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px}
+    .status span{font-variant-numeric:tabular-nums}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
+    .q{padding:18px}
+    .q h2{margin:0 0 10px;font-size:20px}
+    .opts{display:grid;gap:10px}
+    .opt{display:flex;align-items:stretch;border:1px solid #3a4799;border-radius:12px;overflow:hidden}
+    .opt button{flex:1;display:flex;gap:12px;align-items:center;justify-content:flex-start;background:#161e45;border:0;border-radius:0;padding:12px 14px;font-size:16px}
+    .opt .tag{display:inline-grid;place-items:center;width:40px;min-width:40px;background:#0e1433;color:#c7d2ff;border-right:1px solid #2f3a77;font-weight:800}
+    .muted{color:#a9b6ff}
+    .good{color:var(--ok)}
+    .bad{color:var(--bad)}
+    .notice{padding:14px;border:1px dashed #5866c7;border-radius:12px;background:#0d1330;color:#cfd7ff}
+    .small{font-size:12px}
+    .footer{opacity:.8;margin-top:12px}
+    .overlay{position:fixed;inset:0;background:rgba(5,8,18,.8);display:none;align-items:center;justify-content:center;z-index:50}
+    .overlay .box{background:#141b3a;border:1px solid #3a4799;border-radius:16px;padding:18px;max-width:640px}
+    .overlay h3{margin:0 0 8px}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0a0f28;border:1px solid #2a3566;padding:2px 6px;border-radius:6px;color:#cbd5ff}
+    .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header><strong>Quiz: Aeródromos</strong> — 200 preguntas · mecánica de reinicio al fallo</header>
-  <div class="container">
+  <div class="wrap">
+    <header>
+      <h1>Juego de Aeródromos – 200 preguntas</h1>
+      <span class="pill">Basado en tu temario (Tema 1 – Aeródromos)</span>
+    </header>
+
     <div class="card">
-      <div class="meta">
-        <span class="badge" id="qpos">Pregunta 1 / 200</span>
-        <span class="badge" id="streak">Racha: 0</span>
+      <div class="q">
+        <p class="notice">Reglas: aciertas ⇒ pasas a la siguiente. Fallas ⇒ se muestra la correcta y <strong>se reinicia</strong> barajando todo. Ganas al encadenar las <strong>200 correctas</strong>. No se guarda progreso.</p>
+        <div class="controls">
+          <button id="startBtn">Empezar</button>
+          <button id="restartBtn" class="secondary">Reiniciar</button>
+          <button id="validateBtn" class="secondary">Validar 33/33/33</button>
+          <button id="exportBtn" class="secondary">Exportar preguntas</button>
+          <label class="secondary" style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #3a4799;background:#12183b;cursor:pointer">
+            Importar JSON <input id="importInput" type="file" accept="application/json" class="sr-only" />
+          </label>
+        </div>
+        <div class="status">
+          <span>Pregunta: <strong id="qIndex">–</strong>/200</span>
+          <span>Aciertos seguidos: <strong id="streak">0</strong></span>
+        </div>
       </div>
-      <div class="question" id="question">Cargando…</div>
-      <div class="choices" id="choices"></div>
-      <div class="status" id="status"></div>
-      <div class="progress"><div class="bar" id="bar"></div></div>
-      <div class="tiny">Reglas: 1) una pregunta por pantalla; 2) si aciertas avanzas; 3) si fallas, se muestra la correcta y <em>reinicia con orden barajado</em>.</div>
-      <div class="controls">
-        <button class="btn" id="btnRestart">Reiniciar</button>
-        <button class="btn" id="btnShuffle">Barajar</button>
+      <div class="grid">
+        <div class="q">
+          <h2 id="question">Pulsa <em>Empezar</em> para comenzar.</h2>
+          <div class="opts">
+            <div class="opt"><div class="tag">A</div><button id="optA" disabled>—</button></div>
+            <div class="opt"><div class="tag">B</div><button id="optB" disabled>—</button></div>
+            <div class="opt"><div class="tag">C</div><button id="optC" disabled>—</button></div>
+          </div>
+          <p class="footer small muted">Sugerencia: usa <span class="kbd">R</span> para Reiniciar.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="box">
+        <h3 id="ovTitle">Respuesta correcta</h3>
+        <p id="ovBody" class="muted"></p>
+        <div class="controls"><button id="ovOk">Aceptar</button></div>
       </div>
     </div>
   </div>
-  <footer>Generado 2025-08-16 · Archivo único (sin dependencias) · Subible a GitHub Pages</footer>
-</div>
 
-<script>
-const BANK = [{"q": "¿Qué es el área de maniobras (manoeuvring area) de un aeródromo?", "options": ["Parte del área de movimiento destinada al despegue, aterrizaje y rodaje (runways y taxiways, sin incluir plataformas)", "Toda la superficie del aeródromo incluyendo edificios y aparcamientos", "Exclusivamente las plataformas y calles de rodaje"], "correctIndex": 0}, {"q": "¿Qué comprende el área de movimiento (movement area)?", "options": ["Área de maniobras más las plataformas (apron)", "Solo pistas (runways)", "Plataformas únicamente"], "correctIndex": 0}, {"q": "¿Qué es el apron (plataforma)?", "options": ["Zona para estacionamiento, embarque, reabastecimiento y mantenimiento ligero de aeronaves", "Zona exclusiva para aterrizajes", "Una calle de rodaje que conduce a la pista"], "correctIndex": 0}, {"q": "¿Qué unidad suele gestionar el movimiento en plataforma en aeródromos grandes?", "options": ["El servicio de gestión de plataforma (Apron Management Service)", "El servicio de control de aproximación (APP)", "El servicio de información de vuelo de área (FIS)"], "correctIndex": 0}, {"q": "La torre de control (TWR) es responsable principalmente de…", "options": ["el control del tránsito en el área de maniobras y el circuito de aeródromo", "la planificación de mantenimiento de pavimentos", "la publicación del AIP"], "correctIndex": 0}, {"q": "¿Qué es el circuito de tránsito de aeródromo (ATZ/Tráfico de aeródromo)?", "options": ["La trayectoria estandarizada de aviones alrededor del aeródromo para ordenar aterrizajes y despegues", "Una zona de aparcamiento para aeronaves", "Un área reservada a helicópteros"], "correctIndex": 0}, {"q": "¿Cómo se designan las pistas (runways)?", "options": ["Con los dos dígitos de su rumbo magnético aproximado (10°→RWY01; 275°→RWY28)", "Con el rumbo geográfico en grados exactos", "Con el nombre del aeródromo seguido de una letra"], "correctIndex": 0}, {"q": "¿Qué letras se usan en pistas paralelas?", "options": ["L (Left), C (Center), R (Right) junto al número de pista", "N (North), S (South), E (East), W (West)", "A, B, C según el viento dominante"], "correctIndex": 0}, {"q": "¿Qué es TORA?", "options": ["Take-Off Run Available: longitud disponible para la carrera de despegue", "Take-Off Run Actual: distancia realmente recorrida en despegue", "Taxiway Of Runway Area: longitud de calle de rodaje paralela"], "correctIndex": 0}, {"q": "¿Qué es TODA?", "options": ["Take-Off Distance Available: TORA + la longitud de clearway utilizable", "Tiempo de operación disponible para aproximaciones", "Longitud disponible para aterrizaje"], "correctIndex": 0}, {"q": "¿Qué es ASDA?", "options": ["Accelerate-Stop Distance Available: TORA + la longitud de stopway utilizable", "Average Speed During Approach: velocidad media de aproximación", "Altitud estándar de aeródromo"], "correctIndex": 0}, {"q": "¿Qué es LDA?", "options": ["Landing Distance Available: longitud disponible para el aterrizaje", "Longitud declarada de aceleración", "Longitud total pavimentada incluyendo franjas"], "correctIndex": 0}, {"q": "¿Qué es una clearway (CWY)?", "options": ["Una zona libre de obstáculos, más allá del umbral, sobre la que puede extenderse la trayectoria de despegue", "Una ampliación pavimentada al final de pista para abortos de despegue", "Una calle de salida rápida"], "correctIndex": 0}, {"q": "¿Qué es una stopway (SWY)?", "options": ["Superficie pavimentada preparada al final de la pista para detener una aeronave en aborto de despegue", "Zona libre de obstáculos sobre la que se extiende la carrera de despegue", "Una calle de rodaje paralela"], "correctIndex": 0}, {"q": "El color de las marcas en pista (runway markings) es…", "options": ["blanco", "amarillo", "rojo"], "correctIndex": 0}, {"q": "El color de las marcas en calles de rodaje (taxiway markings) es…", "options": ["amarillo", "blanco", "azul"], "correctIndex": 0}, {"q": "Las marcas de umbral (threshold) se emplean para…", "options": ["identificar el comienzo de la porción utilizable de la pista para aterrizaje", "indicar la fricción de la pista", "delimitar la franja (strip)"], "correctIndex": 0}, {"q": "La marca de punto de toma de contacto (aiming point) suele situarse…", "options": ["aprox. a 300 m del umbral en pistas de código alto", "exactamente a 150 m del umbral en todas las pistas", "junto al umbral desplazado"], "correctIndex": 0}, {"q": "Las marcas de zona de toma de contacto (TDZ) sirven para…", "options": ["ayudar a identificar la zona inicial de aterrizaje", "indicar la dirección del viento", "señalizar una pista cerrada"], "correctIndex": 0}, {"q": "Las marcas de eje de pista (centerline) son…", "options": ["una línea blanca discontinua a lo largo del eje", "una línea amarilla continua", "puntos rojos alternos"], "correctIndex": 0}, {"q": "¿Cómo se marca una pista cerrada permanentemente?", "options": ["Con grandes X (cruces) en color apropiado que indican clausura", "Con líneas verdes cada 100 m", "Sin ninguna marca, basta NOTAM"], "correctIndex": 0}, {"q": "Las marcas de posición de espera de pista (holding position) en superficie se distinguen por…", "options": ["dos líneas continuas y dos discontinuas amarillas (paralelas)", "una única línea blanca continua", "puntos azules y rojos"], "correctIndex": 0}, {"q": "Las marcas de posición de espera mejorada (CAT II/III) se caracterizan por…", "options": ["patrón tipo 'escala' (ladder) más alejado del eje de pista", "líneas blancas extra a ambos lados del eje", "rombos amarillos en el eje"], "correctIndex": 0}, {"q": "Los letreros de obligación/posición de parada (mandatory instruction signs) tienen…", "options": ["fondo rojo con inscripciones blancas (p. ej., pista/ILS, NO ENTRY)", "fondo amarillo con inscripciones negras", "fondo negro con inscripciones amarillas"], "correctIndex": 0}, {"q": "Los letreros de ubicación (location signs) tienen…", "options": ["fondo negro con inscripciones amarillas (p. ej., 'A')", "fondo rojo con inscripciones blancas", "fondo amarillo con inscripciones negras y flechas"], "correctIndex": 0}, {"q": "Los letreros de dirección/información (direction/information) tienen…", "options": ["fondo amarillo con inscripciones negras y flechas", "fondo negro con inscripciones amarillas", "fondo rojo con inscripciones blancas"], "correctIndex": 0}, {"q": "Los letreros de distancia restante de pista muestran…", "options": ["números blancos sobre fondo negro (millares de pies/metros según Estado)", "números negros sobre fondo blanco", "letras amarillas sobre fondo negro"], "correctIndex": 0}, {"q": "El color de las luces de borde de pista (runway edge lights) es…", "options": ["blanco (con posible transición a amarillo en el tramo final)", "amarillo en todo su recorrido", "rojo fijo en todo su recorrido"], "correctIndex": 0}, {"q": "El color de las luces de umbral de pista (threshold) es…", "options": ["verde en la dirección de aproximación", "rojo hacia aproximación y verde hacia salida", "blanco en ambas direcciones"], "correctIndex": 0}, {"q": "El color de las luces de extremo de pista (runway end) vistas en aproximación es…", "options": ["rojo", "verde", "blanco"], "correctIndex": 0}, {"q": "Las luces de eje de pista (centerline lights) son…", "options": ["blancas hasta los últimos 900–300 m (alternando blanco/rojo) y los últimos 300 m rojas", "amarillas en toda la longitud", "verdes hasta el umbral y rojas en el resto"], "correctIndex": 0}, {"q": "El color de las luces de eje de calle de rodaje (taxiway centerline) es…", "options": ["verde", "azul", "blanco"], "correctIndex": 0}, {"q": "El color de las luces de borde de calle de rodaje es…", "options": ["azul", "verde", "amarillo fijo"], "correctIndex": 0}, {"q": "Las stop bars luminosas en posición de espera son…", "options": ["luces rojas transversales que indican detención", "luces verdes intermitentes que autorizan a entrar", "luces azules alternantes"], "correctIndex": 0}, {"q": "Las runway guard lights (RGL) en intersecciones críticas son…", "options": ["luces amarillas alternantes que llaman la atención del piloto", "luces rojas fijas a 90°", "luces verdes de guiado"], "correctIndex": 0}, {"q": "El PAPI proporciona al piloto…", "options": ["información visual de senda de aproximación (combinación de rojas/blancas)", "información de viento en calma", "indicación de eje de pista por luces intermitentes"], "correctIndex": 0}, {"q": "La indicación correcta en un PAPI para estar en senda nominal es…", "options": ["dos blancas y dos rojas", "todas blancas", "todas rojas"], "correctIndex": 0}, {"q": "Durante operaciones CAT II/III se protegen…", "options": ["las áreas crítica y sensible del ILS ante interferencias", "únicamente la calle de rodaje más cercana a la pista", "la totalidad del aeródromo sin excepciones"], "correctIndex": 0}, {"q": "El RVR (Runway Visual Range) se mide típicamente en…", "options": ["zona de toma de contacto, zona media y extremo (TDZ/MID/END)", "únicamente en el punto medio de pista", "solo en el umbral"], "correctIndex": 0}, {"q": "Las LVP (Low Visibility Procedures) se activan para…", "options": ["proteger ILS y ordenar movimientos cuando la visibilidad/RVR cae por debajo de umbrales", "aumentar la velocidad de rodaje de aeronaves", "permitir rodajes sin autorización"], "correctIndex": 0}, {"q": "El PCN (Pavement Classification Number) expresa…", "options": ["la resistencia portante del pavimento disponible en el aeródromo", "la categoría de extinción de incendios", "la longitud total declarada de pista"], "correctIndex": 0}, {"q": "El ACN (Aircraft Classification Number) expresa…", "options": ["la carga equivalente ejercida por una aeronave sobre el pavimento", "el empuje al despegue de una aeronave", "la categoría de ruido"], "correctIndex": 0}, {"q": "La operación es, por principio general…", "options": ["aceptable cuando ACN ≤ PCN (en las mismas condiciones de referencia)", "posible solo cuando ACN ≥ PCN", "independiente de ACN/PCN"], "correctIndex": 0}, {"q": "Los pavimentos pueden clasificarse…", "options": ["en flexibles y rígidos, entre otros", "solo en rígidos", "solo en flexibles"], "correctIndex": 0}, {"q": "Un SNOWTAM es…", "options": ["un NOTAM especial que reporta el estado de pista por nieve/hielo/contaminación", "un parte meteorológico TAF con nieve", "un aviso de cenizas volcánicas"], "correctIndex": 0}, {"q": "El formato GRF (Global Reporting Format) reporta…", "options": ["códigos de condición de pista (RWYCC 0–6) por tercio de pista y contaminantes", "únicamente fricción promedio MU", "solo la altura de nieve en mm"], "correctIndex": 0}, {"q": "Un RWYCC = 6 indica…", "options": ["pista seca (condición buena)", "pista cubierta de hielo", "pista con nieve compactada"], "correctIndex": 0}, {"q": "Un RWYCC = 0 indica…", "options": ["muy mala condición de frenado (por ejemplo, hielo húmedo)", "pista seca", "condición buena"], "correctIndex": 0}, {"q": "La categoría de lucha contra incendios (RFF) del aeródromo…", "options": ["se basa principalmente en la longitud y anchura de las aeronaves más grandes que operan", "es siempre 10 en aeropuertos con ILS", "depende solo del número de vuelos diarios"], "correctIndex": 0}, {"q": "El tiempo de respuesta objetivo del servicio contra incendios para llegar al punto medio de pista es…", "options": ["no superior a ~3 minutos (referencia OACI)", "no superior a ~10 minutos", "no inferior a ~6 minutos"], "correctIndex": 0}, {"q": "La manga de viento (windsock) sirve para…", "options": ["indicar dirección e intensidad aproximada del viento en superficie", "medir temperatura del aire", "detectores de humo en plataforma"], "correctIndex": 0}, {"q": "El indicador de dirección en plataforma (AGL/SEÑALES de guiado en stand)…", "options": ["ayuda a posicionar la aeronave en la puerta/posición de estacionamiento", "indica el QNH", "indica el nivel de combustible"], "correctIndex": 0}, {"q": "Un punto de espera intermedio en taxiway se marca con…", "options": ["línea amarilla continua transversal simple", "línea blanca discontinua", "dos líneas rojas paralelas"], "correctIndex": 0}, {"q": "La designación de calles de rodaje suele ser…", "options": ["por letras (A, B, C…) y combinaciones (A1, B2)", "por números pares exclusivamente", "por colores"], "correctIndex": 0}, {"q": "Las salidas rápidas de pista (RET) están diseñadas para…", "options": ["permitir abandonar la pista a mayor velocidad con ángulos agudos", "servir de calles de rodaje sólo para helicópteros", "reducir la fricción en superficie mojada"], "correctIndex": 0}, {"q": "La franja de pista (runway strip) es…", "options": ["un área que rodea pista y stopway destinada a reducir el riesgo por salidas de pista", "una zona pavimentada adicional para rodajes", "una ampliación de la pista para operaciones nocturnas"], "correctIndex": 0}, {"q": "Las superficies limitadoras de obstáculos (OLS) incluyen…", "options": ["superficies de aproximación, despegue, transición, horizontal interna y cónica", "únicamente la superficie cónica", "solo la superficie horizontal externa"], "correctIndex": 0}, {"q": "El color de las marcas de plataforma (líneas de guiado) suele ser…", "options": ["amarillo", "blanco", "verde"], "correctIndex": 0}, {"q": "Los bordes de plataforma, según Estado, pueden marcarse…", "options": ["con líneas y/o luces para delimitar áreas de seguridad y circulación", "siempre con luces rojas intermitentes", "nunca se marcan"], "correctIndex": 0}, {"q": "El FOD (Foreign Object Debris/Damage) se controla porque…", "options": ["objetos sueltos pueden dañar aeronaves y motores", "ayuda a medir la fricción", "mejora la señalización nocturna"], "correctIndex": 0}, {"q": "Los procedimientos de rodaje en baja visibilidad (SMGCS/A-SMGCS)…", "options": ["guiado y control del movimiento en superficie para mantener la seguridad en baja visibilidad", "solo cambian la asignación de pistas", "eliminan la necesidad de autorización ATC"], "correctIndex": 0}, {"q": "Una barra de parada (stop bar) apagada y luces de guía encendidas implican…", "options": ["autorización para entrar al área protegida de pista", "que se debe detener", "que la pista está cerrada"], "correctIndex": 0}, {"q": "¿De qué color son, en general, las marcas de pista frente a las de rodaje?", "options": ["Pista blancas; rodaje amarillas", "Ambas amarillas", "Pista amarillas; rodaje blancas"], "correctIndex": 0}, {"q": "¿Qué color identifica la señal de obligación 'CAT II/III HOLD'?", "options": ["Rojo con letras blancas", "Amarillo con letras negras", "Negro con letras amarillas"], "correctIndex": 0}, {"q": "Los letreros de dirección hacia otra calle de rodaje muestran flechas sobre fondo…", "options": ["amarillo con inscripciones negras", "negro con inscripciones amarillas", "rojo con letras blancas"], "correctIndex": 0}, {"q": "La distancia restante de pista se indica con placas…", "options": ["números blancos sobre fondo negro", "números negros sobre fondo blanco", "letras amarillas sobre fondo amarillo"], "correctIndex": 0}, {"q": "El eje de calle de rodaje iluminado es…", "options": ["verde continuo", "azul intermitente", "blanco continuo"], "correctIndex": 0}, {"q": "Las luces de borde de calle de rodaje son normalmente…", "options": ["azules", "verdes", "blancas"], "correctIndex": 0}, {"q": "¿De qué color son, en general, las marcas de pista frente a las de rodaje?", "options": ["Pista blancas; rodaje amarillas", "Ambas amarillas", "Pista amarillas; rodaje blancas"], "correctIndex": 0}, {"q": "¿Qué color identifica la señal de obligación 'CAT II/III HOLD'?", "options": ["Rojo con letras blancas", "Amarillo con letras negras", "Negro con letras amarillas"], "correctIndex": 0}, {"q": "Los letreros de dirección hacia otra calle de rodaje muestran flechas sobre fondo…", "options": ["amarillo con inscripciones negras", "negro con inscripciones amarillas", "rojo con letras blancas"], "correctIndex": 0}, {"q": "La distancia restante de pista se indica con placas…", "options": ["números blancos sobre fondo negro", "números negros sobre fondo blanco", "letras amarillas sobre fondo amarillo"], "correctIndex": 0}, {"q": "El eje de calle de rodaje iluminado es…", "options": ["verde continuo", "azul intermitente", "blanco continuo"], "correctIndex": 0}, {"q": "Las luces de borde de calle de rodaje son normalmente…", "options": ["azules", "verdes", "blancas"], "correctIndex": 0}, {"q": "¿De qué color son, en general, las marcas de pista frente a las de rodaje?", "options": ["Pista blancas; rodaje amarillas", "Ambas amarillas", "Pista amarillas; rodaje blancas"], "correctIndex": 0}, {"q": "¿Qué color identifica la señal de obligación 'CAT II/III HOLD'?", "options": ["Rojo con letras blancas", "Amarillo con letras negras", "Negro con letras amarillas"], "correctIndex": 0}, {"q": "Los letreros de dirección hacia otra calle de rodaje muestran flechas sobre fondo…", "options": ["amarillo con inscripciones negras", "negro con inscripciones amarillas", "rojo con letras blancas"], "correctIndex": 0}, {"q": "La distancia restante de pista se indica con placas…", "options": ["números blancos sobre fondo negro", "números negros sobre fondo blanco", "letras amarillas sobre fondo amarillo"], "correctIndex": 0}, {"q": "El eje de calle de rodaje iluminado es…", "options": ["verde continuo", "azul intermitente", "blanco continuo"], "correctIndex": 0}, {"q": "Las luces de borde de calle de rodaje son normalmente…", "options": ["azules", "verdes", "blancas"], "correctIndex": 0}, {"q": "¿De qué color son, en general, las marcas de pista frente a las de rodaje?", "options": ["Pista blancas; rodaje amarillas", "Ambas amarillas", "Pista amarillas; rodaje blancas"], "correctIndex": 0}, {"q": "¿Qué color identifica la señal de obligación 'CAT II/III HOLD'?", "options": ["Rojo con letras blancas", "Amarillo con letras negras", "Negro con letras amarillas"], "correctIndex": 0}, {"q": "Los letreros de dirección hacia otra calle de rodaje muestran flechas sobre fondo…", "options": ["amarillo con inscripciones negras", "negro con inscripciones amarillas", "rojo con letras blancas"], "correctIndex": 0}, {"q": "La distancia restante de pista se indica con placas…", "options": ["números blancos sobre fondo negro", "números negros sobre fondo blanco", "letras amarillas sobre fondo amarillo"], "correctIndex": 0}, {"q": "El eje de calle de rodaje iluminado es…", "options": ["verde continuo", "azul intermitente", "blanco continuo"], "correctIndex": 0}, {"q": "Las luces de borde de calle de rodaje son normalmente…", "options": ["azules", "verdes", "blancas"], "correctIndex": 0}, {"q": "Si una pista tiene TORA 3000 m y una clearway utilizable de 300 m, la TODA es…", "options": ["3300 m", "3000 m", "2700 m"], "correctIndex": 0}, {"q": "Si la stopway utilizable es 200 m y la TORA 2600 m, la ASDA es…", "options": ["2800 m", "2600 m", "200 m"], "correctIndex": 0}, {"q": "La LDA puede ser menor que la TORA porque…", "options": ["el umbral de aterrizaje puede estar desplazado", "la clearway aumenta la distancia de aterrizaje", "la stopway siempre cuenta para aterrizaje"], "correctIndex": 0}, {"q": "Con tres luces blancas y una roja en PAPI, el avión está…", "options": ["ligeramente por encima de la senda", "en senda", "por debajo de la senda"], "correctIndex": 0}, {"q": "Con cuatro rojas en PAPI, el avión está…", "options": ["muy por debajo de la senda", "en senda", "muy por encima de la senda"], "correctIndex": 0}, {"q": "¿Por qué se protegen áreas críticas ILS en niebla?", "options": ["Para evitar que vehículos/aeronaves alteren la señal y desplacen las indicaciones", "Para mejorar la fricción", "Para aumentar la longitud declarada"], "correctIndex": 0}, {"q": "En LVP, las 'stop bars'…", "options": ["permanecen encendidas hasta autorización explícita", "se apagan automáticamente con RVR bajo", "solo se encienden de día"], "correctIndex": 0}, {"q": "Si ACN > PCN de forma significativa…", "options": ["la operación puede no ser aceptable por riesgo de daño en pavimento", "la operación es acceptable sin restricciones", "no tiene relación con el pavimento"], "correctIndex": 0}, {"q": "El PCN suele expresarse junto con…", "options": ["tipo de pavimento (F/R), categoría de subrasante (A–D), presión de neumático, método de evaluación", "categoría RFF y código OACI del aeródromo", "anchura de pista y longitud de calle"], "correctIndex": 0}, {"q": "Una señal de 'NO ENTRY' en rodaje es…", "options": ["letrero rojo con texto blanco", "letrero amarillo con texto negro", "letrero negro con texto amarillo"], "correctIndex": 0}, {"q": "Los letreros de ubicación ayudan a…", "options": ["saber en qué calle o punto estás (p. ej., 'B2')", "saber la distancia restante de pista", "indicar la dirección al stand"], "correctIndex": 0}, {"q": "¿Quién coordina el pushback y remolque en muchos aeropuertos?", "options": ["El servicio de plataforma (en coordinación con TWR/GND)", "El ATIS", "El ACC"], "correctIndex": 0}, {"q": "La velocidad de rodaje en plataforma…", "options": ["suele ser reducida por seguridad y la fijan las normas del aeródromo", "no tiene limitaciones", "la fija el piloto según su conveniencia sin restricciones"], "correctIndex": 0}, {"q": "Una inspección FOD típica busca…", "options": ["objetos extraños, derrames, elementos sueltos que puedan dañar aeronaves", "zonas de ILS sensible únicamente", "la lectura del QFE"], "correctIndex": 0}, {"q": "Las luces de extremo de pista, vistas desde el despegue, suelen verse…", "options": ["verdes (umbral) en sentido de salida", "rojas en todos los sentidos", "amarillas alternantes"], "correctIndex": 0}, {"q": "En el último tramo de pista, las luces de borde pueden cambiar a…", "options": ["amarillo para alertar proximidad al final", "verde para indicar zona de toma de contacto", "azul para identificar rodaje"], "correctIndex": 0}, {"q": "Las TDZL (luces de zona de toma de contacto) se encuentran…", "options": ["en barras blancas a ambos lados del eje en la zona inicial de aterrizaje", "en el borde azul de la pista", "exclusivamente en calles de rodaje"], "correctIndex": 0}, {"q": "Las luces de guía de salida de pista (lead-off) suelen ser…", "options": ["alternando verde y amarillo desde pista a rodaje", "azules intermitentes", "rojas fijas"], "correctIndex": 0}, {"q": "Las luces de extremo de pista, vistas desde el despegue, suelen verse…", "options": ["verdes (umbral) en sentido de salida", "rojas en todos los sentidos", "amarillas alternantes"], "correctIndex": 0}, {"q": "En el último tramo de pista, las luces de borde pueden cambiar a…", "options": ["amarillo para alertar proximidad al final", "verde para indicar zona de toma de contacto", "azul para identificar rodaje"], "correctIndex": 0}, {"q": "Las TDZL (luces de zona de toma de contacto) se encuentran…", "options": ["en barras blancas a ambos lados del eje en la zona inicial de aterrizaje", "en el borde azul de la pista", "exclusivamente en calles de rodaje"], "correctIndex": 0}, {"q": "Las luces de guía de salida de pista (lead-off) suelen ser…", "options": ["alternando verde y amarillo desde pista a rodaje", "azules intermitentes", "rojas fijas"], "correctIndex": 0}, {"q": "Las luces de extremo de pista, vistas desde el despegue, suelen verse…", "options": ["verdes (umbral) en sentido de salida", "rojas en todos los sentidos", "amarillas alternantes"], "correctIndex": 0}, {"q": "En el último tramo de pista, las luces de borde pueden cambiar a…", "options": ["amarillo para alertar proximidad al final", "verde para indicar zona de toma de contacto", "azul para identificar rodaje"], "correctIndex": 0}, {"q": "Las TDZL (luces de zona de toma de contacto) se encuentran…", "options": ["en barras blancas a ambos lados del eje en la zona inicial de aterrizaje", "en el borde azul de la pista", "exclusivamente en calles de rodaje"], "correctIndex": 0}, {"q": "Las luces de guía de salida de pista (lead-off) suelen ser…", "options": ["alternando verde y amarillo desde pista a rodaje", "azules intermitentes", "rojas fijas"], "correctIndex": 0}, {"q": "Las luces de extremo de pista, vistas desde el despegue, suelen verse…", "options": ["verdes (umbral) en sentido de salida", "rojas en todos los sentidos", "amarillas alternantes"], "correctIndex": 0}, {"q": "En el último tramo de pista, las luces de borde pueden cambiar a…", "options": ["amarillo para alertar proximidad al final", "verde para indicar zona de toma de contacto", "azul para identificar rodaje"], "correctIndex": 0}, {"q": "Las TDZL (luces de zona de toma de contacto) se encuentran…", "options": ["en barras blancas a ambos lados del eje en la zona inicial de aterrizaje", "en el borde azul de la pista", "exclusivamente en calles de rodaje"], "correctIndex": 0}, {"q": "Las luces de guía de salida de pista (lead-off) suelen ser…", "options": ["alternando verde y amarillo desde pista a rodaje", "azules intermitentes", "rojas fijas"], "correctIndex": 0}, {"q": "La función de la franja que rodea la pista incluye…", "options": ["reducir daño a aeronaves que salgan de pista y facilitar operaciones de rescate", "servir de área de estacionamiento", "permitir rodajes rápidos"], "correctIndex": 0}, {"q": "Las OLS pretenden…", "options": ["limitar la altura de obstáculos alrededor del aeródromo para la seguridad de vuelo", "garantizar servicios comerciales", "medir la fricción del pavimento"], "correctIndex": 0}, {"q": "Un cartel 'A ←' amarillo con flecha indica…", "options": ["dirección hacia la calle de rodaje A", "ubicación actual en A", "prohibición de entrar en A"], "correctIndex": 0}, {"q": "Un cartel negro con 'C3' amarillo indica…", "options": ["ubicación actual en la calle/posición C3", "dirección hacia C3", "distancia restante de 300 m"], "correctIndex": 0}, {"q": "Si el umbral está desplazado 400 m, la LDA…", "options": ["se reduce respecto a la longitud física de pista", "aumenta por la clearway", "no cambia"], "correctIndex": 0}, {"q": "Una clearway contribuye…", "options": ["a la TODA pero no a la LDA", "a la LDA y a la ASDA", "únicamente a la ASDA"], "correctIndex": 0}, {"q": "Una stopway contribuye…", "options": ["a la ASDA pero no a la TODA", "a la TODA pero no a la ASDA", "a LDA y a TODA"], "correctIndex": 0}, {"q": "El ángulo de senda PAPI más común es…", "options": ["aprox. 3° (puede variar según obstáculos y tipo de pista)", "0,5° en todos los casos", "10° por norma general"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Las salidas de pista a alta velocidad permiten…", "options": ["liberar pista más rápido, aumentando capacidad", "operar en pistas no pavimentadas", "eliminar necesidad de ATC"], "correctIndex": 0}, {"q": "Las marcas de eje de rodaje discontinuo indican…", "options": ["cruce o intersección que requiere mayor atención", "pista cerrada", "área de estacionamiento"], "correctIndex": 0}, {"q": "Los 'runway turn pads' sirven para…", "options": ["permitir el viraje de 180° al final de pista en pistas estrechas", "servir de RESA", "aumentar la LDA"], "correctIndex": 0}, {"q": "La RESA (Runway End Safety Area) es…", "options": ["un área al final de pista destinada a reducir riesgos por salidas/aterrizajes cortos", "una ampliación pavimentada obligatoria", "una calle de rodaje paralela"], "correctIndex": 0}, {"q": "Repaso de señalización #1: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #2: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #3: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #4: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #5: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #6: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #7: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #8: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #9: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #10: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #11: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #12: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #13: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #14: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #15: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #16: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #17: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #18: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #19: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #20: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #21: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #22: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #23: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #24: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #25: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #26: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #27: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #28: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #29: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #30: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #31: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #32: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #33: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #34: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #35: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #36: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #37: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #38: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #39: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #40: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #41: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #42: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #43: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #44: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #45: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #46: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #47: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #48: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #49: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #50: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #51: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}, {"q": "Repaso de señalización #52: ¿Cuál es el color de las marcas de rodaje?", "options": ["Amarillo", "Blanco", "Rojo"], "correctIndex": 0}];
+  <script>
+    // ===== Game data structure =====
+    /** Each question: { id:number, q:string, a:string, b:string, c:string, correct:0|1|2 } */
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+    // NOTE: We will rebalance the correct letter positions at runtime to achieve ~33/33/33 over 200 (67/67/66).
+    // This keeps the content intact and just relocates where the correct choice sits among A/B/C.
 
-function shuffledOptions(q) {
-  const idx = [0,1,2];
-  shuffle(idx);
-  const options = idx.map(i => q.options[i]);
-  const correctIndex = idx.indexOf(q.correctIndex);
-  return { options, correctIndex };
-}
+    const questionBank = [
+      // (Same 200 questions as in the canvas; A is initially the correct option for most items)
+      {"id":1,"q":"¿Cuál es la diferencia esencial entre aeródromo y aeropuerto?","a":"El aeropuerto es un aeródromo con instalaciones y servicios permanentes para transporte aéreo comercial","b":"El aeródromo tiene torre de control y el aeropuerto no","c":"El aeródromo siempre es de uso militar","correct":0},
+      {"id":2,"q":"Según el temario, un aeródromo es…","a":"Un área definida de tierra o agua destinada a la llegada, salida y movimiento en superficie de aeronaves","b":"Exclusivamente una pista y su calle de salida rápida","c":"Solo un helipuerto con servicios médicos","correct":0},
+      {"id":3,"q":"¿Qué implica que todo aeropuerto sea un aeródromo?","a":"Que comparte la definición de área para operaciones en superficie, añadiendo servicios comerciales","b":"Que sólo opera vuelos IFR","c":"Que no puede tener plataforma de carga","correct":0},
+      {"id":4,"q":"Los aeropuertos de interés general en España se definen según…","a":"El Real Decreto aplicable y su relevancia estratégica para el sistema de transporte","b":"El número de PAPI instalados","c":"La longitud total de pista mayor de 3.000 m","correct":0},
+      {"id":5,"q":"Una base aérea usada conjuntamente es…","a":"Una instalación militar con uso compartido por tráfico civil","b":"Un aeródromo civil ocasionalmente abierto a helicópteros","c":"Un aeropuerto exclusivo de aviación general","correct":0},
+      {"id":6,"q":"Los aeródromos eventuales son…","a":"Emplazamientos temporales aptos para operaciones limitadas","b":"Aeropuertos con dos o más pistas paralelas","c":"Zonas de deshielo permanentes","correct":0},
+      {"id":7,"q":"En la configuración de un aeropuerto, el ‘lado aire’ incluye…","a":"Pistas, calles de rodaje y plataformas","b":"Terminal de pasajeros y estacionamientos públicos","c":"Zonas comerciales y oficinas","correct":0},
+      {"id":8,"q":"La división de operaciones en un aeropuerto se encarga de…","a":"Guiado e inspección del área de movimiento, coordinación operativa y servicios asociados","b":"Comercialización de locales en la terminal","c":"Únicamente del handling a la carga","correct":0},
 
-let order = [...Array(BANK.length).keys()];
-let pos = 0;
-let streak = 0;
-let current = null;
+      {"id":9,"q":"La clave de referencia del aeródromo está relacionada con…","a":"Envergadura y longitud de campo de referencia de aeronaves objetivo","b":"Número de pistas y su orientación","c":"Existencia de terminal de carga","correct":0},
+      {"id":10,"q":"El ARP (Aerodrome Reference Point) es…","a":"Un punto calculado cercano al centro geométrico del aeródromo","b":"Siempre el punto medio de la pista principal","c":"La intersección de todas las calles de rodaje","correct":0},
+      {"id":11,"q":"El ARP hoy está en desuso operativo porque…","a":"Se dispone de coordenadas precisas de umbrales y puntos clave con equipos modernos","b":"Ha sido sustituido por el punto de visada","c":"Es incompatible con operaciones RNAV","correct":0},
+      {"id":12,"q":"La elevación de aeródromo es…","a":"La elevación del punto más alto del área de aterrizaje","b":"La altitud del ARP","c":"La altitud del umbral con ILS","correct":0},
+      {"id":13,"q":"La elevación de aeródromo puede no coincidir con…","a":"El punto medio de la pista ni los extremos de pista","b":"La elevación del PAPI","c":"La cota de las calles de rodaje","correct":0},
+      {"id":14,"q":"Los pavimentos deben soportar…","a":"Impacto de aterrizaje y cargas máximas con aeronave a MTOW en parada","b":"Únicamente el peso en rodaje ligero","c":"Solo cargas uniformes sin impacto","correct":0},
+      {"id":15,"q":"Método aplicable cuando las aeronaves objetivo superan 5.700 kg","a":"ACN–PCN","b":"Masa remolcada equivalente (MRE)","c":"Índice TORA–LDA","correct":0},
+      {"id":16,"q":"El ACN indica…","a":"El efecto relativo de una aeronave sobre un pavimento normalizado","b":"La resistencia del pavimento para uso sin restricciones","c":"La masa máxima autorizada para aterrizaje","correct":0},
+      {"id":17,"q":"El PCN expresa…","a":"La resistencia de un pavimento utilizable sin restricciones","b":"La categoría de aproximación por instrumentos","c":"El número de calles de salida rápida","correct":0},
+      {"id":18,"q":"En PCN 81/R/B/W/T, la ‘R’ significa…","a":"Pavimento rígido","b":"Resistencia mejorada","c":"Rodaje permitido nocturno","correct":0},
+      {"id":19,"q":"El método ‘masa del avión’ se usa…","a":"Cuando la masa de diseño no supera 5.700 kg","b":"Solo en plataformas de carga","c":"Exclusivamente en helicópteros","correct":0},
+      {"id":20,"q":"La envergadura relevante en clave de referencia es…","a":"La distancia punta a punta de ala","b":"El diámetro de fuselaje máximo","c":"La longitud del tren principal","correct":0},
+      {"id":21,"q":"¿Qué dato NO forma parte de ‘datos básicos’?","a":"Procedimientos de aproximación RNAV detallados","b":"ARP, elevación, resistencia de pavimentos","c":"Clave de referencia del aeródromo","correct":0},
+      {"id":22,"q":"Si ACN > PCN para una aeronave dada…","a":"La operación está restringida o no permitida","b":"La pista admite sin restricciones","c":"Se incrementa automáticamente el PCN","correct":0},
+      {"id":23,"q":"Si ACN ≤ PCN…","a":"El pavimento puede usarse sin restricciones por esa aeronave","b":"Debe desplazarse el umbral","c":"Es obligatorio reducir TORA","correct":0},
+      {"id":24,"q":"¿Qué elemento es un ‘dato básico’?","a":"Elevación de aeródromo","b":"Número de mostradores de facturación","c":"Tarifas de estacionamiento","correct":0},
+      {"id":25,"q":"El terreno de fundación en ACN–PCN…","a":"Es el suelo sobre el que se construye el pavimento, con categorías normalizadas","b":"Es irrelevante para el ACN","c":"Solo aplica a calles de rodaje","correct":0},
+      {"id":26,"q":"Una plataforma debe dimensionarse para…","a":"Las situaciones críticas de carga y frenado en parada y maniobra","b":"La ocupación promedio diaria","c":"La ráfaga máxima de viento","correct":0},
+      {"id":27,"q":"¿Qué limita primero operaciones pesadas?","a":"PCN insuficiente frente a ACN de la aeronave","b":"Ausencia de PAPI","c":"Falta de VOR check-point","correct":0},
+      {"id":28,"q":"El ARP…","a":"Permanece normalmente donde se determinó por primera vez","b":"Se recalcula cada temporada","c":"Se sitúa siempre en la torre","correct":0},
 
-function reset(reorder=true) {
-  if (reorder) shuffle(order);
-  pos = 0;
-  streak = 0;
-  renderNext();
-}
+      {"id":29,"q":"Una pista es…","a":"Área rectangular definida preparada para despegues y aterrizajes","b":"Zona libre de obstáculos fuera del aeródromo","c":"Calle de rodaje paralela","correct":0},
+      {"id":30,"q":"El designador de pista 18 indica…","a":"Orientación magnética aproximada 180°","b":"Elevación 180 ft","c":"Longitud 1.800 m","correct":0},
+      {"id":31,"q":"En pistas paralelas, la letra ‘L’ significa…","a":"Pista izquierda respecto a la dirección de aproximación","b":"Pista con luces de borde bajas","c":"Pista con LDA limitada","correct":0},
+      {"id":32,"q":"En tres pistas paralelas, ‘C’ indica…","a":"La pista central visto en dirección de aproximación","b":"Pista con aproximación de categoría C","c":"Pista usada por carga","correct":0},
+      {"id":33,"q":"Señal de eje de pista:","a":"Línea blanca discontinua cuya anchura/separación varían por tipo de pista","b":"Línea amarilla continua con tachas","c":"Triángulos blancos hacia el eje","correct":0},
+      {"id":34,"q":"Faja lateral de pista:","a":"Dos fajas blancas continuas coincidentes con los bordes de pista","b":"Flechas blancas hacia el umbral","c":"Cheurones amarillos","correct":0},
+      {"id":35,"q":"El número de fajas del umbral depende de…","a":"La anchura de la pista","b":"La TORA disponible","c":"El tipo de ILS","correct":0},
+      {"id":36,"q":"Umbral desplazado permanente requiere…","a":"Faja transversal y flechas en la parte anterior al umbral desplazado","b":"X rojas sobre el umbral","c":"Letreros negros con caracteres amarillos","correct":0},
+      {"id":37,"q":"Zona de toma de contacto (marcas):","a":"Pares de fajas según longitud de pista, simétricas al eje","b":"Triángulos amarillos a 150 m del umbral","c":"Un rectángulo continuo a 1.000 ft","correct":0},
+      {"id":38,"q":"Punto de visada (‘aiming point’):","a":"Marca blanca que proporciona referencia de visor para aterrizaje","b":"Marca amarilla que fija el umbral táctico","c":"Marca roja que limita TORA","correct":0},
+      {"id":39,"q":"Pista cerrada (marcado):","a":"X grandes en blanco sobre la pista","b":"Zigzag amarillo en eje","c":"Cuadrados negros en borde","correct":0},
+      {"id":40,"q":"Zona no apta para operación:","a":"Marcaje específico según temario, no utilizable para rodaje ni aterrizaje","b":"Siempre utilizable en emergencia","c":"Se usa como RESA obligatoria","correct":0},
+      {"id":41,"q":"Plataforma de viraje en pista:","a":"Área en el extremo de pista para girar aeronaves sin plataforma externa","b":"Calle de salida rápida","c":"Apartadero de espera","correct":0},
+      {"id":42,"q":"Calle de salida rápida (definición):","a":"Calle de rodaje diseñada para abandonar pista a alta velocidad","b":"Calle paralela usada como pista auxiliar","c":"Vía exclusiva para vehículos SEI","correct":0},
+      {"id":43,"q":"Apartadero de espera:","a":"Área donde aeronaves esperan antes de entrar en pista","b":"Bahía de estacionamiento remoto","c":"Zona de deshielo","correct":0},
+      {"id":44,"q":"Plataforma:","a":"Área destinada al estacionamiento y servicios a aeronaves","b":"Franja de pista más RESA","c":"Superficie libre de obstáculos fuera del perímetro","correct":0},
+      {"id":45,"q":"Superficies asociadas a pista incluyen…","a":"Franja de pista y RESA","b":"PAPI y ALS","c":"TWR y MET","correct":0},
+      {"id":46,"q":"CWY (Clearway) es…","a":"Área libre de obstáculos tras el extremo de pista para ascenso inicial","b":"Zona pavimentada usable para frenado","c":"Zona de espera antes del umbral","correct":0},
+      {"id":47,"q":"Los obstáculos en CWY/RESA deben ser…","a":"Frangibles","b":"Fijos de hormigón","c":"Permitidos si están a >15 m","correct":0},
+      {"id":48,"q":"La franja de pista (Runway Strip) busca…","a":"Reducir daños a aeronaves que se salgan y proteger sobrevuelo en despegue/aterrizaje","b":"Servir de zona de estacionamiento temporal","c":"Aumentar TORA legalmente","correct":0},
+      {"id":49,"q":"RESA reduce el riesgo en…","a":"Aterrizaje corto o salida por el final de pista","b":"Colisiones en plataforma","c":"Pérdida de separación ATC","correct":0},
+      {"id":50,"q":"Las marcas de zona de parada (stopway) afectan a…","a":"ASDA (si existe SWY)","b":"LDA directamente","c":"TODA sin excepción","correct":0},
+      {"id":51,"q":"En la intersección pista–calle de rodaje…","a":"Se conservan las señales de pista; las de la calle pueden interrumpirse","b":"Se prioriza siempre la calle de rodaje","c":"Se eliminan las marcas de umbral","correct":0},
+      {"id":52,"q":"Orden de prioridad de señales en intersecciones de pistas:","a":"Aproximación de precisión > No precisión > Visual","b":"Visual > No precisión > Precisión","c":"No precisión > Visual > Precisión","correct":0},
 
-function renderNext() {
-  if (pos >= order.length) {
-    document.getElementById('question').textContent = "🎉 ¡Has completado las 200 preguntas!";
-    document.getElementById('choices').innerHTML = "";
-    document.getElementById('status').innerHTML = '<span class="ok">¡Enhorabuena! Puedes reiniciar o barajar para otra vuelta.</span>';
-    updateMeta(); updateBar();
-    return;
-  }
-  const q = BANK[ order[pos] ];
-  const sh = shuffledOptions(q);
-  current = { q, options: sh.options, correctIndex: sh.correctIndex };
+      {"id":53,"q":"‘Libre de obstáculos’ en CWY implica…","a":"Sin obstáculos o únicamente frangibles según requisitos","b":"Puede haber obstáculos permanentes señalizados","c":"Solo luces altas permitidas","correct":0},
+      {"id":54,"q":"La franja de pista comprende…","a":"La pista y la zona de parada, si la hubiera","b":"Solo la RESA","c":"Exclusivamente el eje de pista","correct":0},
+      {"id":55,"q":"Objetivo adicional de la franja:","a":"Proteger aeronaves que sobrevuelan durante despegue/aterrizaje","b":"Aumentar TODA 10%","c":"Proveer superficie para PAPI","correct":0},
+      {"id":56,"q":"La RESA es…","a":"Área simétrica en prolongación del eje, adyacente al extremo de la franja","b":"Un tipo de calle de rodaje rápida","c":"Una plataforma aislada","correct":0},
+      {"id":57,"q":"En CWY, si existen objetos…","a":"Deben ser frangibles y de baja masa","b":"Pueden ser rígidos si están pintados","c":"No hay requisitos","correct":0},
+      {"id":58,"q":"El umbral desplazado afecta a…","a":"Reduce LDA respecto a longitud real de pista","b":"Reduce TORA siempre","c":"Aumenta TODA por definición","correct":0},
+      {"id":59,"q":"Con umbral desplazado, el aterrizaje…","a":"Se hace desde el umbral desplazado, no desde el inicio físico de pavimento","b":"Se permite tocar antes del umbral si no hay obstáculo","c":"No afecta a LDA","correct":0},
+      {"id":60,"q":"¿Qué superficie aparece ‘si la hubiera’?","a":"Zona de parada (SWY)","b":"Franja de pista","c":"RESA","correct":0},
+      {"id":61,"q":"¿Qué elemento incrementa TODA pero no TORA?","a":"CWY","b":"SWY","c":"RESA","correct":0},
+      {"id":62,"q":"¿Qué elemento incrementa ASDA pero no TODA?","a":"SWY","b":"CWY","c":"RESA","correct":0},
+      {"id":63,"q":"‘Frangible’ significa…","a":"Se rompe fácilmente sin causar daños estructurales a la aeronave","b":"Refuerzo metálico oculto","c":"Material anti-derrape","correct":0},
+      {"id":64,"q":"La CWY está siempre…","a":"Al final de la pista en uso, para el ascenso inicial","b":"Al inicio opuesto, para aterrizaje corto","c":"En plataforma","correct":0},
+      {"id":65,"q":"La RESA se ubica…","a":"Adyacente al extremo de la franja, alineada con el eje de pista","b":"Sobre la calle de rodaje paralela","c":"Dentro del umbral desplazado","correct":0},
+      {"id":66,"q":"Objetivo de una plataforma de viraje en pista:","a":"Permitir giro de aeronaves grandes sin invadir márgenes","b":"Servir de puesto de estacionamiento","c":"Aumentar LDA","correct":0},
+      {"id":67,"q":"La presencia de SWY…","a":"No incrementa LDA","b":"Incrementa TODA","c":"Reduce TORA","correct":0},
+      {"id":68,"q":"La presencia de CWY…","a":"No incrementa LDA ni ASDA","b":"Reduce TORA","c":"Incrementa ASDA","correct":0},
+      {"id":69,"q":"Un umbral no desplazado implica…","a":"LDA igual a longitud real de pista (salvo otras restricciones)","b":"TODA siempre menor que TORA","c":"ASDA igual a LDA","correct":0},
+      {"id":70,"q":"‘Zona no apta para operación’ significa…","a":"Área marcada que no debe usarse para rodaje, despegue o aterrizaje","b":"Se puede usar para rodaje lento","c":"Admite estacionamiento breve","correct":0},
 
-  document.getElementById('question').textContent = q.q;
-  const c = document.getElementById('choices');
-  c.innerHTML = "";
-  sh.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'choice';
-    btn.textContent = opt;
-    btn.addEventListener('click', () => onChoice(i, btn));
-    c.appendChild(btn);
-  });
-  document.getElementById('status').textContent = "";
-  updateMeta(); updateBar();
-}
+      {"id":71,"q":"TORA es…","a":"Longitud de pista declarada disponible para el recorrido en tierra del despegue","b":"Longitud total de pista + RESA","c":"Longitud de despegue disponible más SWY","correct":0},
+      {"id":72,"q":"ASDA =","a":"TORA + SWY (si existe)","b":"TORA + CWY (si existe)","c":"LDA + CWY","correct":0},
+      {"id":73,"q":"TODA =","a":"TORA + CWY (si existe)","b":"TORA + SWY (si existe)","c":"LDA + RESA","correct":0},
+      {"id":74,"q":"LDA es…","a":"Longitud declarada disponible para el aterrizaje en tierra","b":"Longitud total de pavimento portante","c":"TORA − SWY","correct":0},
+      {"id":75,"q":"Si el umbral está desplazado d metros, entonces LDA =","a":"Longitud real de pista − d","b":"TORA + d","c":"ASDA − d","correct":0},
+      {"id":76,"q":"Ejemplo: Long RWY=2.400 m, CWY=300 m, sin SWY. TODA=","a":"2.700 m","b":"2.400 m","c":"2.400 m + SWY","correct":0},
+      {"id":77,"q":"Ejemplo: Long RWY=2.400 m, SWY=240 m, sin CWY. ASDA=","a":"2.640 m","b":"2.400 m","c":"2.880 m","correct":0},
+      {"id":78,"q":"Ejemplo: TORA=1.800 m; CWY=200 m; SWY=0; TODA y ASDA son:","a":"TODA=2.000 m; ASDA=1.800 m","b":"TODA=1.800 m; ASDA=2.000 m","c":"TODA=2.000 m; ASDA=2.000 m","correct":0},
+      {"id":79,"q":"Ejemplo: Long RWY=1.900 m; umbral desplazado 150 m; LDA=","a":"1.750 m","b":"1.900 m","c":"2.050 m","correct":0},
+      {"id":80,"q":"Si hay SWY sin CWY: efecto sobre TODA y ASDA:","a":"TODA no cambia; ASDA aumenta","b":"TODA aumenta; ASDA no cambia","c":"Ambas aumentan","correct":0},
+      {"id":81,"q":"Si hay CWY sin SWY: efecto sobre TODA y ASDA:","a":"TODA aumenta; ASDA no cambia","b":"ASDA aumenta; TODA no cambia","c":"Ambas aumentan","correct":0},
+      {"id":82,"q":"Con umbral no desplazado: LDA =","a":"Longitud real de pista (si no hay otras restricciones)","b":"TORA − SWY","c":"TODA − CWY","correct":0},
+      {"id":83,"q":"¿Qué distancia nunca incluye CWY?","a":"ASDA","b":"TODA","c":"Ninguna","correct":0},
+      {"id":84,"q":"¿Qué distancia nunca incluye SWY?","a":"TODA","b":"ASDA","c":"TORA","correct":0},
+      {"id":85,"q":"TORA siempre es igual a…","a":"Longitud real de pista declarada utilizable para el recorrido de despegue","b":"LDA","c":"TODA","correct":0},
+      {"id":86,"q":"Con CWY=0 y SWY=0: TODA, ASDA =","a":"Ambas iguales a TORA","b":"TODA>TORA; ASDA=TORA","c":"TODA=TORA; ASDA>TORA","correct":0},
+      {"id":87,"q":"Si se desplaza el umbral 120 m en una RWY de 2.300 m: LDA=","a":"2.180 m","b":"2.300 m","c":"2.420 m","correct":0},
+      {"id":88,"q":"En qué casos LDA < TORA:","a":"Cuando hay umbral desplazado permanente","b":"Cuando existe SWY","c":"Cuando existe CWY","correct":0},
+      {"id":89,"q":"Relación básica correcta:","a":"ASDA = TORA + SWY","b":"LDA = TORA + CWY","c":"TODA = TORA + SWY","correct":0},
+      {"id":90,"q":"Para aumentar TODA sin tocar pavimento:","a":"Añadir CWY si procede","b":"Añadir SWY","c":"Desplazar umbral","correct":0},
+      {"id":91,"q":"Para aumentar ASDA sin tocar CWY:","a":"Añadir SWY si procede","b":"Añadir RESA","c":"Añadir PAPI","correct":0},
+      {"id":92,"q":"La presencia de RESA afecta a:","a":"No modifica TODA/ASDA/LDA; es una superficie de seguridad","b":"Aumenta LDA en 10%","c":"Reduce TORA en 5%","correct":0},
 
-function lockChoices() {
-  document.querySelectorAll('button.choice').forEach(b => b.disabled = true);
-}
+      {"id":93,"q":"Pistas paralelas son…","a":"Aquellas cuyas prolongaciones de eje no se cortan","b":"Las que se cruzan con ángulo < 15°","c":"Las casi paralelas","correct":0},
+      {"id":94,"q":"Pistas casi paralelas:","a":"No se cortan, pero sus ejes divergen/convergen ≤ 15°","b":"Se cruzan con ángulo ≥ 30°","c":"Comparten el mismo designador","correct":0},
+      {"id":95,"q":"Pistas cruzadas:","a":"Se cruzan en algún punto, hoy en desuso por seguridad y eficacia","b":"Nunca existieron en aeropuertos grandes","c":"Obligan a operación VFR","correct":0},
+      {"id":96,"q":"Ejemplo de pista única según temario:","a":"Asturias","b":"Gran Canaria","c":"Barcelona","correct":0},
+      {"id":97,"q":"Ejemplo de pistas paralelas según temario:","a":"Gran Canaria","b":"Asturias","c":"Barcelona (antiguo) con cruzadas","correct":0},
+      {"id":98,"q":"Ejemplo de casi paralelas según temario:","a":"Málaga","b":"Gran Canaria","c":"Asturias","correct":0},
 
-function onChoice(i, btn) {
-  const correct = i === current.correctIndex;
-  lockChoices();
-  if (correct) {
-    streak++; btn.classList.add('correct');
-    document.getElementById('status').innerHTML = '<span class="ok">¡Correcto!</span>';
-    pos++; setTimeout(renderNext, 450);
-  } else {
-    streak = 0; btn.classList.add('wrong');
-    const all = [...document.querySelectorAll('button.choice')];
-    const good = all[current.correctIndex];
-    good.classList.add('correct');
-    document.getElementById('status').innerHTML = '<span class="fail">Incorrecto.</span> Respuesta correcta: <strong>' + good.textContent + '</strong>. Reiniciando…';
-    setTimeout(() => reset(true), 1500);
-  }
-  updateMeta(); updateBar();
-}
+      {"id":99,"q":"Definición de calle de rodaje:","a":"Vía definida para rodaje que enlaza partes del aeródromo","b":"Zona de parada al final de pista","c":"Franja de seguridad paralela","correct":0},
+      {"id":100,"q":"Función clave de las calles de rodaje:","a":"Optimizar los recursos operativos del aeródromo","b":"Aumentar LDA","c":"Sustituir RESA","correct":0},
+      {"id":101,"q":"Ancho recomendado en tramos rectilíneos…","a":"Según tabla OACI para categoría; no inferior al mínimo indicado","b":"Igual al ancho de pista","c":"Fijo de 23 m","correct":0},
+      {"id":102,"q":"Señal de eje de calle (TCL):","a":"Marca amarilla que guía el rodaje","b":"Marca blanca discontinua","c":"Letrero negro/amarillo","correct":0},
+      {"id":103,"q":"Faja lateral de calle de rodaje:","a":"Bandas amarillas continuas delimitando el borde","b":"Bandas blancas como en pista","c":"Triángulos blancos","correct":0},
+      {"id":104,"q":"Punto de espera de pista (marcado):","a":"Marca específica de espera antes de penetrar pista","b":"Círculo azul con ‘HOLD’","c":"X blancas","correct":0},
+      {"id":105,"q":"Punto de espera intermedio:","a":"Marca de espera en intersecciones internas de TWY","b":"Zona de parada de pista","c":"Umbral desplazado","correct":0},
+      {"id":106,"q":"Calle de rodaje cerrada (señal):","a":"Marcaje de cierre específico según temario","b":"Flechas blancas hacia umbral","c":"Líneas azules intermitentes","correct":0},
+      {"id":107,"q":"Luces de borde de calle de rodaje son…","a":"Azules (según balizamiento de TWY)","b":"Verdes","c":"Blancas fijas","correct":0},
+      {"id":108,"q":"Luces de eje de calle de rodaje son…","a":"Verdes (en eje)","b":"Azules (en eje)","c":"Blancas intermitentes","correct":0},
+      {"id":109,"q":"RETIL indica…","a":"Calle de salida rápida (indicadoras)","b":"Luces de aproximación simplificada","c":"Punto de verificación VOR","correct":0},
+      {"id":110,"q":"Runway Guard Lights (RGL) se usan…","a":"Para proteger la entrada a pista (luces de protección de pista)","b":"Para indicar eje de pista","c":"Para señalizar RESA","correct":0},
+      {"id":111,"q":"Stop bars (barras de parada):","a":"Luces que impiden la entrada cuando encendidas","b":"Luces del eje de pista","c":"Luces del borde de pista","correct":0},
+      {"id":112,"q":"Puesto de verificación VOR (marcado):","a":"Marca específica en plataforma/TWY para comprobar equipos","b":"Señal blanca de toma de contacto","c":"Letrero rojo ‘VOR’ junto a umbral","correct":0},
+      {"id":113,"q":"Plataforma de viraje en pista (luces):","a":"Puede tener luces específicas según apartado 8.3.7","b":"Usa luces de umbral","c":"No lleva ninguna luz","correct":0},
+      {"id":114,"q":"Apartadero de espera se ubica…","a":"En inmediaciones de cabecera para regular flujo hacia pista","b":"Dentro de RESA","c":"En zona no apta","correct":0},
+      {"id":115,"q":"Denominación de calles de rodaje:","a":"Normalmente por letras (A, B, C…)","b":"Por números magnéticos","c":"Por colores","correct":0},
+      {"id":116,"q":"Fines de inspección en área de movimiento incluyen…","a":"FOD, estado de pavimentos, incursiones y control de fauna","b":"Tarifas de aterrizaje","c":"Estado de tiendas duty-free","correct":0},
 
-function updateMeta() {
-  const qp = document.getElementById('qpos');
-  qp.textContent = 'Pregunta ' + Math.min(pos+1, order.length) + ' / ' + order.length;
-  document.getElementById('streak').textContent = 'Racha: ' + streak;
-}
+      {"id":117,"q":"Plataforma de la terminal de pasajeros es…","a":"Área para estacionar y atender aeronaves de pax","b":"Franja de pista","c":"CWY","correct":0},
+      {"id":118,"q":"Plataforma de estacionamiento se destina a…","a":"Estancia de aeronaves fuera de la terminal","b":"Despegues de emergencia","c":"Control de fauna","correct":0},
+      {"id":119,"q":"Plataforma de terminal de carga…","a":"Área para operaciones de carga/descarga y equipos específicos","b":"Es un apartadero de espera","c":"Es RESA","correct":0},
+      {"id":120,"q":"Área de deshielo/antihielo…","a":"Zona en plataforma destinada a tratamientos de fluidos","b":"Sección de RESA con luces","c":"Señal de pista cerrada","correct":0},
+      {"id":121,"q":"Plataforma de servicio y hangares…","a":"Área para mantenimiento y servicios técnicos","b":"CWY pavimentada","c":"Stopway obligatoria","correct":0},
+      {"id":122,"q":"Plataforma para aviación general…","a":"Zona específica para AG dentro del lado aire","b":"Área pública en terminal","c":"Sección de calle de salida rápida","correct":0},
+      {"id":123,"q":"Puesto de estacionamiento aislado…","a":"Puesto destinado a aeronaves que requieren separación por seguridad","b":"Cualquier stand remoto","c":"Stand junto al finger","correct":0},
+      {"id":124,"q":"Modalidades de entrada/salida del stand incluyen…","a":"Push-back, power-in/out, tow-in/out","b":"Solo push-back","c":"Solo power-out","correct":0},
+      {"id":125,"q":"Iluminación de puestos de estacionamiento…","a":"Parte de iluminación de plataforma (8.4)","b":"Luces de eje de pista","c":"RETIL","correct":0},
+      {"id":126,"q":"Embarque de pasajeros se realiza…","a":"Mediante pasarela o autobús según configuración del stand","b":"Siempre por pasarela","c":"Nunca por remoto","correct":0},
 
-function updateBar() {
-  const pct = (pos / order.length) * 100;
-  document.getElementById('bar').style.width = pct + '%';
-}
+      {"id":127,"q":"‘Indicadores y dispositivos de señalización’ proporcionan…","a":"Info visual sobre dirección de aterrizaje, viento y condiciones del área de movimiento","b":"Info de tarifas y slots","c":"Parámetros meteorológicos para ATIS","correct":0},
+      {"id":128,"q":"Las ‘señales’ (en el temario) son…","a":"Ayudas visuales pintadas sobre pavimentos (señalización horizontal)","b":"Letreros verticales retroiluminados","c":"Balizas de obstáculos","correct":0},
+      {"id":129,"q":"Las ‘luces’ son…","a":"Ayudas visuales mediante lámparas eléctricas","b":"Letreros verticales","c":"Pictogramas en manuales","correct":0},
+      {"id":130,"q":"Los ‘letreros’ son…","a":"Señalización vertical en paneles con leyendas (RWY, TWY, etc.)","b":"Marcas blancas en pista","c":"Cheurones amarillos","correct":0},
+      {"id":131,"q":"Las ‘balizas’…","a":"Objetos expuestos sobre el terreno para indicar obstáculo/límite","b":"Luces del ALS","c":"Stop bars","correct":0},
+      {"id":132,"q":"Color de marcas de PISTA según temario:","a":"Blanco","b":"Amarillo","c":"Rojo","correct":0},
+      {"id":133,"q":"En intersección de dos pistas, conservan sus señales…","a":"La pista más importante (según prioridad del temario)","b":"Ambas por igual","c":"La de menor LDA","correct":0},
+      {"id":134,"q":"En intersección pista–TWY, se conservan…","a":"Las señales de pista; las de TWY pueden interrumpirse","b":"Las de TWY; las de pista se eliminan","c":"Ninguna","correct":0},
 
-document.getElementById('btnRestart').addEventListener('click', () => reset(true));
-document.getElementById('btnShuffle').addEventListener('click', () => { shuffle(order); renderNext(); });
+      {"id":135,"q":"Umbral: configuración de fajas…","a":"Número según ancho de pista; dispuestas simétricamente al eje","b":"Siempre 12 fajas","c":"Siempre 8 fajas","correct":0},
+      {"id":136,"q":"Las fajas del umbral comienzan a…","a":"6 m del umbral","b":"30 m del umbral","c":"En el propio borde","correct":0},
+      {"id":137,"q":"Con umbral desplazado temporal…","a":"Faja transversal con ‘V’ invertidas y flechas previas","b":"X blancas sobre umbral","c":"Letrero rojo con inscripción RWY-CLSD","correct":0},
+      {"id":138,"q":"Designador de pista:","a":"Dos cifras; con L/C/R en paralelas","b":"Tres cifras en pistas > 3000 m","c":"Incluye altitud en ft","correct":0},
+      {"id":139,"q":"Señal de eje de pista:","a":"Línea blanca discontinua; ancho/separación según tipo","b":"Línea amarilla continua","c":"Doble línea blanca continua","correct":0},
+      {"id":140,"q":"Faja lateral de pista (anchura mínima):","a":"0,90 m en pistas ≥ 30 m; 0,45 m en más estrechas","b":"0,30 m en todas","c":"1,50 m en todas","correct":0},
+      {"id":141,"q":"Zona de toma de contacto: número de pares de fajas en 1.500–2.400 m:","a":"4 pares","b":"3 pares","c":"6 pares","correct":0},
+      {"id":142,"q":"Zona de toma de contacto en RWY ≥ 2.400 m:","a":"6 pares de fajas","b":"4 pares","c":"2 pares","correct":0},
+      {"id":143,"q":"Zona de toma de contacto en RWY < 900 m:","a":"1 par de fajas","b":"2 pares","c":"3 pares","correct":0},
+      {"id":144,"q":"Punto de visada (‘aiming point’) sirve para…","a":"Referencia de visor para el aterrizaje","b":"Fijar el umbral táctico","c":"Delimitar RESA","correct":0},
+      {"id":145,"q":"Pista cerrada (marcado):","a":"X grandes blancas a intervalos","b":"X rojas en borde","c":"Triángulos amarillos","correct":0},
+      {"id":146,"q":"Zona no apta para operación (marcado):","a":"Marcado específico que prohíbe uso operacional","b":"Líneas blancas discontinuas","c":"Letreros verticales rojos solamente","correct":0},
+      {"id":147,"q":"En pistas paralelas, el orden L/C/R se asigna…","a":"Izquierda–Centro–Derecha al verse en la dirección de aproximación","b":"Según uso comercial","c":"Según viento dominante","correct":0},
+      {"id":148,"q":"En pista y TWY intersectadas, puede interrumpirse…","a":"La faja lateral de pista","b":"La señal de eje de pista","c":"El designador","correct":0},
+      {"id":149,"q":"¿Qué marca no es de pista?","a":"TCL (centerline de TWY)","b":"Punto de visada","c":"Zona de toma de contacto","correct":0},
+      {"id":150,"q":"‘Cheurones’ amarillos identifican…","a":"Zona no apta para operación en cabeceras (según normas ICAO, referencia general)","b":"Zona de toma de contacto","c":"Faja lateral","correct":0},
 
-reset(true);
-</script>
+      {"id":151,"q":"Color estándar de marcas en TWY:","a":"Amarillo","b":"Blanco","c":"Rojo","correct":0},
+      {"id":152,"q":"Letreros de señalización vertical (colores):","a":"Fondo negro/naranja/amarillo según tipo, con leyendas normalizadas (genérico del temario)","b":"Siempre fondo rojo","c":"Siempre fondo verde","correct":0},
+      {"id":153,"q":"Señal de punto de espera de pista incluye…","a":"Patrón específico de líneas antes de la RWY","b":"X blancas grandes","c":"Flechas hacia umbral","correct":0},
+      {"id":154,"q":"Señal de punto de espera intermedio se ubica…","a":"En intersecciones internas para control de rodaje","b":"En RESA","c":"En CWY","correct":0},
+      {"id":155,"q":"Señal de TWY cerrada:","a":"Marcaje claro de cierre según 7.2.5","b":"Señal blanca de pista cerrada","c":"Luces de borde amarillas","correct":0},
+      {"id":156,"q":"Señal de plataforma de viraje en pista pertenece a…","a":"Apartado 7.2.6 del temario","b":"Apartado 7.1.1","c":"Apartado 8.5.1","correct":0},
+      {"id":157,"q":"Señal de punto de verificación VOR:","a":"Apartado 7.2.7; facilita chequear el equipo VOR en tierra","b":"Apartado 8.6; para PAPI","c":"Apartado 3.7; configuración","correct":0},
+      {"id":158,"q":"Señalización de puesto de estacionamiento está en…","a":"Apartado 7.3","b":"Apartado 8.4","c":"Apartado 5.2","correct":0},
+      {"id":159,"q":"Denominación de puestos de estacionamiento:","a":"Sistema alfanumérico coherente con la plataforma","b":"Designadores magnéticos","c":"Colores RGB","correct":0},
+      {"id":160,"q":"Entrada/salida del stand puede requerir…","a":"Guiado por personal (marshalling) si no hay sistemas automáticos","b":"RETIL","c":"Stop bars en el stand","correct":0},
+      {"id":161,"q":"Además de señalización, la inspección en plataforma revisa…","a":"Iluminación, FOD, legibilidad de marcas y estado de pavimento","b":"Plan de slots","c":"Precios de combustible","correct":0},
+      {"id":162,"q":"Lado aire vs lado tierra: un servicio del lado tierra es…","a":"Servicio médico para pasajeros y personal","b":"Runway Guard Lights","c":"Stop bars","correct":0},
+
+      {"id":163,"q":"Luces de umbral:","a":"Definen el inicio de la pista utilizable para aterrizaje","b":"Definen RESA","c":"Definen CWY","correct":0},
+      {"id":164,"q":"Luces de identificación de umbral (wing bars):","a":"Ayudan a identificar el umbral en aproximación","b":"Se usan solo en TWY","c":"Sustituyen al designador","correct":0},
+      {"id":165,"q":"Luces de extremo de pista:","a":"Definen el final de la pista","b":"Sustituyen a luces de borde","c":"Se instalan solo en pistas visuales","correct":0},
+      {"id":166,"q":"Luces de eje de pista:","a":"Marcan el eje en condiciones de baja visibilidad","b":"Marcan bordes de TWY","c":"Sustituyen PAPI","correct":0},
+      {"id":167,"q":"Luces de zona de toma de contacto:","a":"Refuerzan percepción de la zona de aterrizaje en RWY de precisión","b":"Se ponen en todas las RWY","c":"Sustituyen marcas","correct":0},
+      {"id":168,"q":"Luces de borde de pista:","a":"Delimitan los bordes de pista","b":"Guían en calles de rodaje","c":"Solo en plataformas","correct":0},
+      {"id":169,"q":"Luces de zona de parada:","a":"Asociadas a SWY donde exista","b":"Asociadas a CWY","c":"Sustituyen stop bars","correct":0},
+      {"id":170,"q":"Luces de borde de TWY (8.3.1):","a":"Azules","b":"Verdes","c":"Blancas","correct":0},
+      {"id":171,"q":"Luces de eje de TWY (8.3.2):","a":"Verdes","b":"Azules","c":"Ámbar","correct":0},
+      {"id":172,"q":"RETIL (8.3.3) se refiere a…","a":"Luces indicadoras de calle de salida rápida","b":"Luces de entrada a pista","c":"Luces PAPI","correct":0},
+      {"id":173,"q":"Stop bars (8.3.4) se usan para…","a":"Detener aeronaves antes de pista cuando encendidas","b":"Marcar eje de pista","c":"Iluminar stands","correct":0},
+      {"id":174,"q":"Runway Guard Lights (8.3.5)…","a":"Alertan de la proximidad de pista en puntos de cruce","b":"Iluminan RESA","c":"Son parte del ALS","correct":0},
+
+      {"id":175,"q":"Luces de entrada a pista (8.5.1) sirven para…","a":"Transición visual desde aproximación al umbral","b":"Guiar sobre plataforma","c":"Iluminar RESA","correct":0},
+      {"id":176,"q":"Sistema sencillo de iluminación de aproximación (8.5.2):","a":"Configuración básica para pistas sin precisión","b":"Exclusivo CAT III","c":"Solo para pistas visuales diurnas","correct":0},
+      {"id":177,"q":"ALS para aproximaciones de precisión CAT I (8.5.3):","a":"Sistema específico más extenso que el sencillo","b":"Idéntico al de CAT II/III","c":"No incluye luces centrales","correct":0},
+      {"id":178,"q":"ALS para CAT II/III (8.5.4) se caracteriza por…","a":"Mayor extensión y complejidad que CAT I","b":"Menor longitud que el sencillo","c":"Uso exclusivo de luces azules","correct":0},
+      {"id":179,"q":"La finalidad de los ALS es…","a":"Proporcionar referencias visuales para la fase final de aproximación","b":"Medir PCN","c":"Sustituir PAPI","correct":0},
+      {"id":180,"q":"‘Luces de entrada a pista’ forman parte de…","a":"Iluminación de aproximación (8.5)","b":"Iluminación de plataforma","c":"Señalización horizontal","correct":0},
+
+      {"id":181,"q":"PAPI proporciona…","a":"Información visual de pendiente de aproximación","b":"Guía lateral en TWY","c":"Medida de viento","correct":0},
+      {"id":182,"q":"PAPI estándar con 4 luces: en senda correcta se ve…","a":"2 blancas y 2 rojas","b":"3 blancas y 1 roja","c":"4 rojas","correct":0},
+      {"id":183,"q":"PAPI por encima de la senda (alto):","a":"Más luces blancas (p. ej., 3 blancas/1 roja o 4 blancas)","b":"Más rojas (3 rojas/1 blanca)","c":"Siempre 2 y 2","correct":0},
+      {"id":184,"q":"PAPI por debajo de senda (bajo):","a":"Más rojas (p. ej., 3 rojas/1 blanca o 4 rojas)","b":"Más blancas","c":"No cambia el patrón","correct":0},
+      {"id":185,"q":"Ubicación de PAPI respecto a umbral:","a":"Lado de pista, antes de punto de visada según diseño","b":"En la RESA","c":"Entre las fajas de umbral","correct":0},
+      {"id":186,"q":"PAPI pertenece a…","a":"Sistemas visuales indicadores de pendiente (8.6)","b":"Luces de plataforma (8.4)","c":"Señales horizontales (7)","correct":0},
+
+      {"id":187,"q":"Objetivo del S.E.I.:","a":"Salvar vidas ante accidentes/incidentes en el aeropuerto","b":"Asignar slots horarios","c":"Expedir NOTAM","correct":0},
+      {"id":188,"q":"Coordinación S.E.I. incluye…","a":"Acuerdos con bomberos, policía, guardacostas y hospitales","b":"Exclusivamente personal aeroportuario","c":"Solo aerolíneas","correct":0},
+      {"id":189,"q":"Prevención del S.E.I. incluye…","a":"Formación al personal y simulacros","b":"Solo respuesta reactiva","c":"Gestión de pasarelas","correct":0},
+      {"id":190,"q":"Categoría SEI del aeródromo se basa en…","a":"Longitud total de los aviones y anchura máxima de fuselaje","b":"Número de pistas","c":"Número de torres de control","correct":0},
+      {"id":191,"q":"Nº de vehículos SEI aumenta…","a":"Con la categoría (ver tabla OACI Doc 9137)","b":"Con la longitud de RESA","c":"Con el número de fingers","correct":0},
+      {"id":192,"q":"Tiempo de respuesta OACI dentro del recinto:","a":"≤ 3 minutos","b":"≤ 5 minutos","c":"≤ 1 minuto","correct":0},
+      {"id":193,"q":"Plan de emergencia del aeropuerto…","a":"Es obligatorio y cubre emergencias aeronáuticas y de infraestructura","b":"Es opcional en aeropuertos pequeños","c":"Solo aplica a incendios en hangares","correct":0},
+      {"id":194,"q":"Servicio médico (lado tierra) se orienta a…","a":"Pasajeros y personal del aeropuerto","b":"Únicamente a tripulaciones","c":"Exclusivamente a operaciones en RESA","correct":0},
+      {"id":195,"q":"Facilitación (FAL) trata…","a":"Procedimientos para agilizar flujos de pax/carga y requisitos documentales","b":"Balizamiento de pista","c":"Asignación de puestos ATC","correct":0},
+      {"id":196,"q":"Asignación de medios en aeropuerto incluye…","a":"Gestión y distribución de recursos operativos (equipos, posiciones, etc.)","b":"Cálculo de ACN","c":"Diseño de PAPI","correct":0},
+      {"id":197,"q":"Servicio de Dirección de Plataforma (SDP) se refiere a…","a":"Gestión de movimientos y orden en plataforma (lado aire)","b":"Control radar en ruta","c":"Gestión de slots en red europea","correct":0},
+      {"id":198,"q":"Guiado e inspección en área de movimiento incluye…","a":"Vigilancia de incursiones, FOD, fauna y estado de marcas/luces","b":"Plan de marketing","c":"Plan de rutas aéreas","correct":0},
+
+      {"id":199,"q":"El balizamiento de aproximación más exigente se asocia a…","a":"Categorías II/III","b":"Pistas visuales","c":"RETIL","correct":0},
+      {"id":200,"q":"Para cumplir 33/33/33 en 200 ítems, la distribución exacta más cercana es…","a":"67 respuestas A, 67 B, 66 C","b":"66 A, 66 B, 66 C y 2 anuladas","c":"70 A, 65 B, 65 C","correct":0}
+    ];
+
+    // ===== Core state =====
+    let order = []; // shuffled indices of questions
+    let idx = 0;    // current index within order
+    let streak = 0; // correct-in-a-row counter
+
+    const qEl = document.getElementById('question');
+    const btnA = document.getElementById('optA');
+    const btnB = document.getElementById('optB');
+    const btnC = document.getElementById('optC');
+    const qIndexEl = document.getElementById('qIndex');
+    const streakEl = document.getElementById('streak');
+    const overlay = document.getElementById('overlay');
+    const ovTitle = document.getElementById('ovTitle');
+    const ovBody = document.getElementById('ovBody');
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('restartBtn').addEventListener('click', () => restart(true));
+    document.getElementById('validateBtn').addEventListener('click', validateDistribution);
+    document.getElementById('exportBtn').addEventListener('click', exportQuestions);
+    document.getElementById('importInput').addEventListener('change', importQuestions);
+    document.getElementById('ovOk').addEventListener('click', () => { overlay.style.display='none'; });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase()==='r') restart(true);
+    });
+
+    function startGame(){
+      // Rebalance A/B/C correct letters to 67/67/66
+      rebalanceCorrectLetters();
+      order = Array.from({length: questionBank.length}, (_,i)=>i);
+      shuffle(order);
+      idx = 0; streak = 0; updateHUD();
+      enableOpts(true);
+      renderCurrent();
+    }
+
+    function restart(showToast){
+      order = Array.from({length: questionBank.length}, (_,i)=>i);
+      shuffle(order);
+      idx = 0; streak = 0; updateHUD();
+      renderCurrent();
+      if(showToast){
+        // No-op
+      }
+    }
+
+    function updateHUD(){
+      qIndexEl.textContent = idx>0 ? idx+1 : (order.length? 1: 0);
+      streakEl.textContent = String(streak);
+    }
+
+    function enableOpts(on){
+      [btnA,btnB,btnC].forEach(b=>b.disabled=!on);
+    }
+
+    function renderCurrent(){
+      if(idx>=order.length){
+        qEl.innerHTML = `¡Victoria! Has acertado las 200 seguidas. Pulsa <strong>Reiniciar</strong> para volver a jugar.`;
+        [btnA,btnB,btnC].forEach(b=>{b.disabled=true; b.textContent='—';});
+        return;
+      }
+      const q = questionBank[order[idx]];
+      qEl.textContent = q.q;
+      btnA.textContent = q.a; btnB.textContent = q.b; btnC.textContent = q.c;
+      btnA.onclick = () => answer(0,q);
+      btnB.onclick = () => answer(1,q);
+      btnC.onclick = () => answer(2,q);
+      updateHUD();
+    }
+
+    function answer(sel,q){
+      if(sel === q.correct){
+        streak++; idx++;
+        renderCurrent();
+      } else {
+        const letters = ['A','B','C'];
+        ovTitle.textContent = 'Respuesta incorrecta';
+        ovBody.innerHTML = `La opción correcta era <strong>${letters[q.correct]}</strong>: <em>${[q.a,q.b,q.c][q.correct]}</em>.<br>La partida se reinicia y se barajan las preguntas.`;
+        overlay.style.display = 'flex';
+        setTimeout(()=>{ overlay.style.display='none'; restart(); }, 2200);
+      }
+      updateHUD();
+    }
+
+    // ===== Utilities =====
+    function shuffle(arr){
+      // Fisher–Yates
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+    function rebalanceCorrectLetters(){
+      const target = {A:67,B:67,C:66};
+      const counts = {A:0,B:0,C:0};
+
+      function moveCorrectTo(q, targetIdx){
+        if(q.correct === targetIdx) return;
+        const opts = [q.a,q.b,q.c];
+        const newOpts = [null,null,null];
+        newOpts[targetIdx] = opts[q.correct];
+        const otherSrc = [0,1,2].filter(i=>i!==q.correct);
+        const otherDst = [0,1,2].filter(i=>i!==targetIdx);
+        newOpts[otherDst[0]] = opts[otherSrc[0]];
+        newOpts[otherDst[1]] = opts[otherSrc[1]];
+        [q.a,q.b,q.c] = newOpts;
+        q.correct = targetIdx;
+      }
+
+      for(const q of questionBank){
+        if     (q.correct===0) counts.A++;
+        else if(q.correct===1) counts.B++;
+        else                   counts.C++;
+      }
+
+      for(const q of questionBank){
+        if(counts.A < target.A){ moveCorrectTo(q,0); counts.A++; continue; }
+        if(counts.B < target.B){ moveCorrectTo(q,1); counts.B++; continue; }
+        if(counts.C < target.C){ moveCorrectTo(q,2); counts.C++; continue; }
+        if(counts.A>=target.A && counts.B>=target.B && counts.C>=target.C) break;
+      }
+    }
+
+    function validateDistribution(){
+      const counts = {A:0,B:0,C:0};
+      for(const q of questionBank){
+        if(q.correct===0) counts.A++; else if(q.correct===1) counts.B++; else counts.C++;
+      }
+      alert(`Correctas por letra:\nA: ${counts.A}\nB: ${counts.B}\nC: ${counts.C}\n(Objetivo ≈ 67/67/66 para 200 preguntas)`);
+    }
+
+    function exportQuestions(){
+      const blob = new Blob([JSON.stringify(questionBank,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'preguntas_aerodromos.json'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importQuestions(e){
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const arr = JSON.parse(reader.result);
+          if(!Array.isArray(arr)) throw new Error('Formato inválido');
+          if(arr.some(x=>typeof x.q!== 'string' || typeof x.a!=='string' || typeof x.b!=='string' || typeof x.c!=='string' || typeof x.correct!=='number')){
+            throw new Error('Estructura inválida');
+          }
+          if(arr.some(x=>x.correct<0 || x.correct>2)) throw new Error('Índice de correcta fuera de rango');
+          if(arr.length!==200){
+            if(!confirm(`Se han cargado ${arr.length} preguntas (no son 200). ¿Usarlas igualmente?`)) return;
+          }
+          questionBank.length = 0; questionBank.push(...arr);
+          restart(true);
+          alert('Preguntas importadas y barajadas.');
+        }catch(err){
+          alert('Error al importar: '+err.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+  </script>
 </body>
 </html>
